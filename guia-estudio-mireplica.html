@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía de Estudio - MiRéplica (TEMA03 API REST)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, 'Segoe UI', Roboto, sans-serif; background: #f5f7fa; color: #1e293b; line-height: 1.7; padding: 0; }
+  .container { max-width: 1000px; margin: 0 auto; padding: 24px; }
+  h1 { font-size: 2rem; margin-bottom: 8px; color: #0f172a; }
+  h1 small { font-size: 1rem; font-weight: 400; color: #64748b; }
+  .subtitle { color: #475569; margin-bottom: 32px; font-size: 1.05rem; }
+  h2 { font-size: 1.5rem; margin-top: 48px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 3px solid #3b82f6; color: #0f172a; }
+  h3 { font-size: 1.2rem; margin-top: 32px; margin-bottom: 12px; color: #1e293b; }
+  h4 { font-size: 1.05rem; margin-top: 24px; margin-bottom: 8px; color: #334155; }
+  p, li { margin-bottom: 10px; color: #334155; }
+  ul, ol { padding-left: 24px; margin-bottom: 16px; }
+  a { color: #2563eb; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code { background: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace; color: #0f172a; word-break: break-word; }
+  pre { background: #ffffff; color: #1e293b; border: 1px solid #d1d5db; padding: 20px; border-radius: 10px; overflow-x: auto; font-size: 0.85rem; line-height: 1.6; margin: 16px 0 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; }
+  pre code { background: transparent; padding: 0; border-radius: 0; font-size: inherit; }
+  .code-label { display: inline-block; background: #eef2ff; color: #3730a3; border: 1px solid #c7d2fe; padding: 2px 12px; border-radius: 6px; font-size: 0.85rem; font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace; margin-bottom: 4px; }
+  .tag   { color: #cf222e; }
+  .attr  { color: #8250df; }
+  .str   { color: #0a3069; }
+  .kwd   { color: #cf222e; }
+  .cmt   { color: #6e7781; font-style: italic; }
+  .num   { color: #0550ae; }
+  .ann   { color: #0550ae; }
+  .cls   { color: #953800; }
+  .ifc   { color: #8250df; }
+  .fn    { color: #8250df; }
+
+  .info-box { background: #eff6ff; border-left: 4px solid #3b82f6; padding: 16px 20px; border-radius: 8px; margin: 16px 0 24px; }
+  .info-box strong { color: #1e40af; }
+  .warn-box { background: #fefce8; border-left: 4px solid #eab308; padding: 16px 20px; border-radius: 8px; margin: 16px 0 24px; }
+  .warn-box strong { color: #854d0e; }
+  .danger-box { background: #fef2f2; border-left: 4px solid #ef4444; padding: 16px 20px; border-radius: 8px; margin: 16px 0 24px; }
+  .danger-box strong { color: #991b1b; }
+
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid #e2e8f0; word-break: break-word; }
+  th { background: #f1f5f9; font-weight: 600; color: #0f172a; }
+  tr:hover td { background: #f8fafc; }
+
+  .toc { background: white; border-radius: 12px; padding: 24px 28px; margin-bottom: 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .toc h2 { margin-top: 0; border-bottom: 0; }
+  .toc ol { margin-bottom: 0; }
+  .toc li { margin-bottom: 6px; }
+  .toc a { display: block; padding: 4px 0; }
+  .toc .sub-item { padding-left: 24px; }
+
+  .section-card { background: white; border-radius: 12px; padding: 28px 32px; margin-bottom: 32px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .badge { display: inline-block; background: #dbeafe; color: #1d4ed8; padding: 2px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; margin-bottom: 12px; }
+  .flow-arrow { text-align: center; font-size: 1.5rem; color: #94a3b8; margin: 8px 0; }
+  .summary-step { background: #f0fdf4; border-left: 4px solid #22c55e; padding: 16px 20px; border-radius: 8px; margin: 12px 0; }
+  .summary-step strong { color: #166534; }
+
+  .postman { background: #fdf2f8; border-left: 4px solid #ec4899; padding: 16px 20px; border-radius: 8px; margin: 16px 0 24px; }
+  .postman strong { color: #9d174d; }
+  .postman pre { background: #ffffff; border-color: #f9a8d4; }
+
+  .ssms { background: #ecfdf5; border-left: 4px solid #10b981; padding: 16px 20px; border-radius: 8px; margin: 16px 0 24px; }
+  .ssms strong { color: #065f46; }
+  .ssms pre { background: #ffffff; border-color: #6ee7b7; }
+
+  .diagram { background: #f8fafc; border: 1px dashed #94a3b8; border-radius: 10px; padding: 18px 22px; margin: 16px 0 24px; font-family: 'JetBrains Mono', Consolas, monospace; font-size: 0.85rem; white-space: pre-wrap; word-break: break-word; color: #334155; }
+
+  @media (max-width: 640px) {
+    .container { padding: 12px; }
+    .section-card { padding: 16px; }
+  }
+
+  @media print {
+    pre, code { white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; overflow-x: visible; page-break-inside: avoid; }
+    .toc, .section-card { box-shadow: none; border: 1px solid #e2e8f0; }
+    body { background: #ffffff; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Gu&iacute;a de Estudio: MiR&eacute;plica <small>Reconstrucci&oacute;n del TEMA03 API REST + TEMA03_CONSUMIR_SERVICIOS (cliente MVC) &mdash; ASP.NET Core 7 + SQL Server</small></h1>
+<p class="subtitle">Esta gu&iacute;a documenta la <strong>r&eacute;plica de los dos proyectos</strong> del profe (<code>TEMA03</code> y <code>TEMA03_CONSUMIR_SERVICIOS</code> de <code>ReposProfe</code>), creados por m&iacute; misma en <code>MiReplica</code>: la <strong>API REST</strong> (<code>MiReplica\WebApi\WebApplication1</code>) y el <strong>cliente MVC</strong> (<code>MiReplica\ConsumoServicios\WebApplication1</code>) que consume esa API con <code>HttpClient</code>. Incluye el <strong>c&oacute;digo &iacute;ntegro</strong> de cada archivo tal como qued&oacute;, el <strong>orden real de creaci&oacute;n</strong> (por dependencias, Program.cs al final), los <strong>errores que resolv&iacute;</strong> y la <strong>regla del puerto</strong> (<code>apiBase</code> del cliente = <code>https://localhost:7229</code>).</p>
+
+<div class="toc">
+  <h2>&Iacute;ndice de navegaci&oacute;n</h2>
+  <ol>
+    <li><a href="#intro">Introducci&oacute;n: qu&eacute; es mi r&eacute;plica y c&oacute;mo funciona</a></li>
+    <li><a href="#requisitos">Requisitos previos: SQL Server, SSMS, .NET 7 y Visual Studio</a></li>
+    <li><a href="#sql">Paso 0: La base de datos DB_BIBLIOTECA (ya creada con el script del profe)</a></li>
+    <li><a href="#api">PROYECTO 1: LA API REST (MiReplica\WebApi\WebApplication1)</a>
+      <ol class="sub-item">
+        <li><a href="#api-paso1">4.1. Crear el proyecto y agregar los paquetes NuGet (desde Visual Studio)</a></li>
+        <li><a href="#api-paso2">4.2. appsettings.json (la cadena de conexi&oacute;n)</a></li>
+        <li><a href="#api-paso3">4.3. Models: Autor, Libro, ApiResponse&lt;T&gt;</a></li>
+        <li><a href="#api-paso4">4.4. Interfaces: IAutorService, ILibroService</a></li>
+        <li><a href="#api-paso5">4.5. Services: AutorService, LibroService (ADO.NET + SPs)</a></li>
+        <li><a href="#api-paso6">4.6. Controllers: AutorController, LibroController</a></li>
+        <li><a href="#api-paso7">4.7. Program.cs (se deja para el final) y launchSettings.json</a></li>
+        <li><a href="#api-paso8">4.8. Compilar, ejecutar y probar en Swagger (los 6 endpoints)</a></li>
+      </ol>
+    </li>
+    <li><a href="#cliente">PROYECTO 2: EL CLIENTE MVC (MiReplica\ConsumoServicios\WebApplication1)</a>
+      <ol class="sub-item">
+        <li><a href="#cliente-paso1">5.1. Crear el proyecto y los paquetes NuGet (Newtonsoft.Json, no SqlClient)</a></li>
+        <li><a href="#cliente-paso2">5.2. Program.cs (MVC + AddHttpClient)</a></li>
+        <li><a href="#cliente-paso3">5.3. Models: Autor, Libro, ApiResponse&lt;T&gt;</a></li>
+        <li><a href="#cliente-paso4">5.4. Controllers/AutorController.cs (el consumidor con HttpClient)</a></li>
+        <li><a href="#cliente-paso5">5.5. La vista clave: Views/Autor/Index.cshtml</a></li>
+        <li><a href="#cliente-paso6">5.6. launchSettings.json y c&oacute;mo ejecutar el cliente</a></li>
+        <li><a href="#cliente-paso7">5.7. C&oacute;mo se conectan los 2 proyectos y la prueba integrada</a></li>
+      </ol>
+    </li>
+    <li><a href="#errores">Errores reales que resolv&iacute; (para no volver a tropezar)</a></li>
+    <li><a href="#resumen">Resumen: orden completo de creaci&oacute;n y ejecuci&oacute;n</a></li>
+  </ol>
+</div>
+
+<!-- ============================================================ -->
+<div class="section-card" id="intro">
+  <h2>1. Introducci&oacute;n: qu&eacute; es mi r&eacute;plica y c&oacute;mo funciona</h2>
+
+  <p>Mi r&eacute;plica reconstruye, <strong>creando los archivos a mano</strong>, los <strong>2 proyectos</strong> del profe: la <strong>API REST</strong> (carpeta <code>TEMA03</code>) y el <strong>cliente MVC</strong> (carpeta <code>TEMA03_CONSUMIR_SERVICIOS</code>). Son una <strong>pareja</strong> (frontend + backend): la API es una <strong>Web API de ASP.NET Core 7</strong> que habla con <code>DB_BIBLIOTECA</code> usando <strong>ADO.NET con procedimientos almacenados</strong> (sin ORM), y el cliente MVC <strong>consume esa API por HTTP</strong> con <code>HttpClient</code>. El cliente <strong>nunca toca la base de datos</strong>.</p>
+
+  <table>
+    <tr><th>Proyecto</th><th>Qu&eacute; es</th><th>Tecnolog&iacute;a</th><th>Puerto</th><th>&iquest;Toca la BD?</th></tr>
+    <tr><td><code>WebApi\WebApplication1</code></td><td><strong>API REST</strong> "de servicio"</td><td>ASP.NET Core Web API (.NET 7)</td><td><code>https://localhost:7229</code></td><td><strong>S&iacute;</strong> &mdash; ejecuta los SPs de <code>DB_BIBLIOTECA</code></td></tr>
+    <tr><td><code>ConsumoServicios\WebApplication1</code></td><td><strong>Cliente MVC</strong> que "consume servicios"</td><td>ASP.NET Core MVC (.NET 7)</td><td><code>http://localhost:5217</code></td><td><strong>No</strong> &mdash; le pide los datos a la API</td></tr>
+  </table>
+
+  <h3>El flujo completo (de arriba hacia abajo)</h3>
+  <div class="diagram">Navegador (usuario)
+      |
+      |  GET http://localhost:5217/Autor
+      v
+[1] CLIENTE MVC (ConsumoServicios)  -->  AutorController.Index()
+      |  NO toca la base de datos
+      |  usa HttpClient con apiBase = "https://localhost:7229"
+      |  GET https://localhost:7229/api/Autor
+      v
+[2] API REST (WebApi)  -->  AutorController.Get()  -->  AutorService.list()
+      |  inyecci&oacute;n de dependencias (IAutorService)
+      |  ADO.NET: SqlConnection + SqlCommand + CommandType.StoredProcedure
+      v
+[3] SQL Server  -->  EXEC sp_list_autores  (sobre DB_BIBLIOTECA)
+      ^
+      |  respuesta: filas (AutorId, Nombre)
+      |  la API las devuelve como JSON
+      |  el cliente las deserializa a List&lt;Autor&gt; y las pinta en una tabla</div>
+
+  <div class="info-box"><strong>Regla del puerto (documentada):</strong> la API queda en <code>https://localhost:7229</code> y el cliente usa <code>apiBase = "https://localhost:7229"</code>. El puerto HTTPS de la API <strong>siempre</strong> debe coincidir con el <code>apiBase</code> del cliente. El puerto del cliente (5217) es independiente: solo es la direcci&oacute;n donde navega el usuario.</div>
+
+  <h3>Los 6 endpoints que expone la API</h3>
+  <table>
+    <tr><th>M&eacute;todo</th><th>Ruta</th><th>SP que ejecuta</th><th>Qu&eacute; devuelve</th></tr>
+    <tr><td><code>GET</code></td><td><code>api/Autor</code></td><td><code>sp_list_autores</code></td><td>Lista de autores</td></tr>
+    <tr><td><code>GET</code></td><td><code>api/Libro</code></td><td><code>sp_list_libros</code></td><td>Lista de libros (con nombre del autor)</td></tr>
+    <tr><td><code>GET</code></td><td><code>api/Libro/{id}</code></td><td><code>sp_find_libro_by_id</code></td><td>Libro o 404 con ApiResponse</td></tr>
+    <tr><td><code>POST</code></td><td><code>api/Libro</code></td><td><code>sp_insert_libro</code></td><td>Confirma inserci&oacute;n</td></tr>
+    <tr><td><code>PUT</code></td><td><code>api/Libro</code> (id en el body)</td><td><code>sp_update_libro</code></td><td>Confirma actualizaci&oacute;n</td></tr>
+    <tr><td><code>DELETE</code></td><td><code>api/Libro/{id}</code></td><td><code>sp_delete_libro</code></td><td>Confirma eliminaci&oacute;n</td></tr>
+  </table>
+
+  <div class="warn-box"><strong>&iexcl;Cuidado con la ruta del PUT!</strong> En mi r&eacute;plica el <code>[HttpPut]</code> <strong>no lleva segmento</strong> (<code>{LibroId}</code>): el <code>libroId</code> va <strong>dentro del body</strong> del JSON. Esto difiere de como yo lo hab&iacute;a escrito primero y me dio error (ver <a href="#errores">secci&oacute;n 6</a>).</div>
+</div>
+
+<!-- ============================================================ -->
+<div class="section-card" id="requisitos">
+  <h2>2. Requisitos previos: SQL Server, SSMS, .NET 7 y Visual Studio</h2>
+
+  <ul>
+    <li><strong>SQL Server</strong> corriendo en la m&aacute;quina (el proyecto usa <code>server=.</code>, instancia local).</li>
+    <li><strong>SQL Server Management Studio (SSMS)</strong> para revisar la base <code>DB_BIBLIOTECA</code>.</li>
+    <li><strong>.NET 7 SDK/Runtime</strong>. En mi m&aacute;quina est&aacute; el SDK 10.0.302 con runtimes 7.0.20 / 8.0.29 / 10.0.10, y <code>dotnet new webapi -f net7.0</code> funciona sin problema.</li>
+    <li><strong>Visual Studio 2022</strong> con la carga de trabajo "ASP.NET y desarrollo web".</li>
+  </ul>
+
+  <div class="danger-box"><strong>La cadena de conexi&oacute;n es un requisito de la BD:</strong> la API lee de <code>appsettings.json</code> esta cadena:
+    <code style="display:inline-block; background:#fecaca; color:#7f1d1d; padding:2px 8px; margin-top:6px;">server=.;database=DB_BIBLIOTECA;user=sa;password=sql;TrustServerCertificate=True;</code>
+    Significa: servidor local (<code>.</code>), base <code>DB_BIBLIOTECA</code>, usuario <code>sa</code> con password <code>sql</code>, y confiar en el certificado. <strong>Si mi SQL Server no tuviera ese password de <code>sa</code>, tendr&iacute;a que cambiarlo</strong>. Aqu&iacute; se deja tal cual.</div>
+
+  <div class="info-box"><strong>Certificado HTTPS de desarrollo:</strong> para que Swagger y el futuro cliente llamen a <code>https://localhost:7229</code> sin problemas, ejecuta una vez: <code>dotnet dev-certs https --trust</code>.</div>
+
+  <div class="info-box"><strong>Comprobaci&oacute;n r&aacute;pida de la BD:</strong> desde SSMS (o <code>sqlcmd</code>) verifico que exista <code>DB_BIBLIOTECA</code> con las tablas <code>Autor</code> y <code>Libro</code> y los 6 SPs, antes de levantar la API.</div>
+</div>
+
+<!-- ============================================================ -->
+<div class="section-card" id="sql">
+  <h2>3. Paso 0: La base de datos DB_BIBLIOTECA (ya creada con el script del profe)</h2>
+
+  <p>Para esta r&eacute;plica <strong>NO creo la base de nuevo</strong>: ya la hab&iacute;a creado antes ejecutando el script <code>Query_Biblioteca(1).sql</code> de <code>ReposProfe</code> (el c&oacute;digo &iacute;ntegro del script est&aacute; documentado en mi otra gu&iacute;a: <code>guia-estudio-reposprofe.html</code>).</p>
+
+  <p>Estado actual de la base (verificado con <code>sqlcmd</code>):</p>
+  <ul>
+    <li><strong>Tabla <code>Autor</code>:</strong> <code>AutorId INT IDENTITY PK</code>, <code>Nombre</code>, <code>Nacionalidad</code>. Contiene 2 autores (id 1 Garc&iacute;a M&aacute;rquez, id 2 Vargas Llosa).</li>
+    <li><strong>Tabla <code>Libro</code>:</strong> <code>LibroId INT IDENTITY PK</code>, <code>AutorId FK</code>, <code>Titulo</code>, <code>ISBN UNIQUE</code>, <code>AnioPublicacion</code>. Contiene los libros de prueba y los que insert&eacute; al probar la API.</li>
+    <li><strong>6 procedimientos almacenados:</strong> <code>sp_list_autores</code>, <code>sp_list_libros</code>, <code>sp_find_libro_by_id</code>, <code>sp_insert_libro</code>, <code>sp_update_libro</code>, <code>sp_delete_libro</code>.</li>
+  </ul>
+
+  <h3>Los 6 SPs y c&oacute;mo los usa la API</h3>
+  <table>
+    <tr><th>SP</th><th>Qu&eacute; hace</th><th>Se usa en&hellip;</th></tr>
+    <tr><td><code>sp_list_autores</code></td><td>Lista autores (AutorId, Nombre)</td><td><code>AutorService.list()</code> &rarr; <code>GET api/Autor</code></td></tr>
+    <tr><td><code>sp_list_libros</code></td><td>Lista libros con nombre del autor (JOIN)</td><td><code>LibroService.list()</code> &rarr; <code>GET api/Libro</code></td></tr>
+    <tr><td><code>sp_find_libro_by_id</code></td><td>Busca un libro por su id</td><td><code>LibroService.getById()</code> &rarr; <code>GET api/Libro/{id}</code></td></tr>
+    <tr><td><code>sp_insert_libro</code></td><td>Inserta un libro</td><td><code>LibroService.insert()</code> &rarr; <code>POST api/Libro</code></td></tr>
+    <tr><td><code>sp_update_libro</code></td><td>Actualiza un libro</td><td><code>LibroService.update()</code> &rarr; <code>PUT api/Libro</code></td></tr>
+    <tr><td><code>sp_delete_libro</code></td><td>Elimina un libro</td><td><code>LibroService.delete()</code> &rarr; <code>DELETE api/Libro/{id}</code></td></tr>
+  </table>
+
+  <div class="info-box"><strong>Dato clave:</strong> la API <strong>nunca escribe SQL a mano</strong>: crea un <code>SqlCommand</code> con el nombre del SP y <code>CommandType.StoredProcedure</code>. El <code>sp_list_autores</code> devuelve solo 2 columnas (<code>AutorId</code>, <code>Nombre</code>), por eso el servicio solo mapea esas 2.</div>
+</div>
+
+<!-- ============================================================ -->
+<div class="section-card" id="api">
+  <h2>4. LA API REST (MiReplica\WebApi\WebApplication1)</h2>
+
+  <p>Esta es la parte central de la gu&iacute;a. El <strong>orden de creaci&oacute;n importa</strong>: los archivos dependen unos de otros, as&iacute; que los creo en el orden que marca la dependencia (primero lo que no depende de nadie, y <strong>Program.cs al final</strong> porque depende de todas las piezas).</p>
+
+  <h3 id="api-paso1">4.1. Crear el proyecto y agregar los paquetes NuGet (desde Visual Studio)</h3>
+
+  <p>El proyecto lo cre&eacute; con el CLI de .NET (con target expl&iacute;cito <code>net7.0</code>):</p>
+<pre>
+dotnet new webapi -n WebApplication1 -f net7.0 -o WebApplication1</pre>
+
+  <p>Despu&eacute;s lo abr&iacute; en Visual Studio y <strong>agregu&eacute; los paquetes desde el Administrador de paquetes NuGet</strong> (clic derecho en el proyecto &rarr; <strong>Administrar paquetes NuGet</strong> &rarr; pesta&ntilde;a <strong>Examinar</strong> &rarr; buscar &rarr; <strong>Instalar</strong>):</p>
+
+  <table>
+    <tr><th>Paquete</th><th>Versi&oacute;n</th><th>Para qu&eacute;</th></tr>
+    <tr><td><code>Microsoft.Data.SqlClient</code></td><td><code>5.2.0</code></td><td>ADO.NET: <code>SqlConnection</code>, <code>SqlCommand</code>, <code>SqlDataReader</code>, <code>SqlTransaction</code> (obligatorio para conectar con SQL Server)</td></tr>
+    <tr><td><code>Swashbuckle.AspNetCore</code></td><td><code>6.5.0</code></td><td>Swagger (documentaci&oacute;n y pruebas de la API)</td></tr>
+    <tr><td><code>Microsoft.AspNetCore.OpenApi</code></td><td><code>7.0.19</code></td><td>Viene por defecto con la plantilla webapi</td></tr>
+  </table>
+
+  <p>El archivo <code>WebApplication1.csproj</code> queda as&iacute;:</p>
+
+  <span class="code-label">WebApplication1.csproj</span>
+<pre>
+<span class="tag">&lt;Project</span> <span class="attr">Sdk</span>=<span class="str">"Microsoft.NET.Sdk.Web"</span><span class="tag">&gt;</span>
+
+  <span class="tag">&lt;PropertyGroup&gt;</span>
+    <span class="tag">&lt;TargetFramework&gt;</span>net7.0<span class="tag">&lt;/TargetFramework&gt;</span>
+    <span class="tag">&lt;Nullable&gt;</span>enable<span class="tag">&lt;/Nullable&gt;</span>
+    <span class="tag">&lt;ImplicitUsings&gt;</span>enable<span class="tag">&lt;/ImplicitUsings&gt;</span>
+  <span class="tag">&lt;/PropertyGroup&gt;</span>
+
+  <span class="tag">&lt;ItemGroup&gt;</span>
+    <span class="tag">&lt;PackageReference</span> <span class="attr">Include</span>=<span class="str">"Microsoft.AspNetCore.OpenApi"</span> <span class="attr">Version</span>=<span class="str">"7.0.19"</span> <span class="tag">/&gt;</span>
+    <span class="tag">&lt;PackageReference</span> <span class="attr">Include</span>=<span class="str">"Microsoft.Data.SqlClient"</span> <span class="attr">Version</span>=<span class="str">"5.2.0"</span> <span class="tag">/&gt;</span>
+    <span class="tag">&lt;PackageReference</span> <span class="attr">Include</span>=<span class="str">"Swashbuckle.AspNetCore"</span> <span class="attr">Version</span>=<span class="str">"6.5.0"</span> <span class="tag">/&gt;</span>
+  <span class="tag">&lt;/ItemGroup&gt;</span>
+
+<span class="tag">&lt;/Project&gt;</span></pre>
+
+  <div class="info-box"><strong>&iquest;Por qu&eacute; Microsoft.Data.SqlClient?</strong> Es la librer&iacute;a moderna de ADO.NET para SQL Server. Sin ella no existen <code>SqlConnection</code> ni <code>SqlCommand</code> y el c&oacute;digo de los Services no compila.</div>
+
+  <h3 id="api-paso2">4.2. appsettings.json (la cadena de conexi&oacute;n)</h3>
+
+  <p>Agrego la secci&oacute;n <code>ConnectionStrings</code> con la clave <code>conexion</code> (el nombre que leo despu&eacute;s en los Services).</p>
+
+  <span class="code-label">appsettings.json</span>
+<pre>{
+  <span class="str">"Logging"</span>: {
+    <span class="str">"LogLevel"</span>: {
+      <span class="str">"Default"</span>: <span class="str">"Information"</span>,
+      <span class="str">"Microsoft.AspNetCore"</span>: <span class="str">"Warning"</span>
+    }
+  },
+  <span class="str">"AllowedHosts"</span>: <span class="str">"*"</span>,
+  <span class="str">"ConnectionStrings"</span>: {
+    <span class="str">"conexion"</span>: <span class="str">"server=.;database=DB_BIBLIOTECA;user=sa;password=sql;TrustServerCertificate=True;"</span>
+  }
+}</pre>
+
+  <div class="danger-box"><strong>Ojo:</strong> la cadena contiene la contrase&ntilde;a de <code>sa</code> en texto plano. Es normal en este tipo de proyectos de curso, pero <strong>no subir credenciales reales</strong> a GitHub si fueran de producci&oacute;n.</div>
+
+  <h3 id="api-paso3">4.3. Models: Autor, Libro, ApiResponse&lt;T&gt;</h3>
+
+  <p>Son las clases que representan los datos. <code>ApiResponse&lt;T&gt;</code> es el "sobre" que devuelve la API para dar mensajes bonitos adem&aacute;s del dato.</p>
+
+  <span class="code-label">Models/Autor.cs</span>
+<pre><span class="kwd">namespace</span> WebApplication1.Models
+{
+    <span class="kwd">public</span> <span class="kwd">class</span> <span class="cls">Autor</span>
+    {
+        <span class="kwd">public</span> <span class="cls">int</span> AutorId { <span class="kwd">get</span>; <span class="kwd">set</span>; }
+        <span class="kwd">public</span> <span class="cls">string</span> Nombre { <span class="kwd">get</span>; <span class="kwd">set</span>; }
+        <span class="kwd">public</span> <span class="cls">string</span> Nacionalidad { <span class="kwd">get</span>; <span class="kwd">set</span>; }
+    }
+}</pre>
+
+  <span class="code-label">Models/Libro.cs</span>
+<pre><span class="kwd">namespace</span> WebApplication1.Models
+{
+    <span class="kwd">public</span> <span class="kwd">class</span> <span class="cls">Libro</span>
+    {
+        <span class="kwd">public</span> <span class="cls">int</span> LibroId { <span class="kwd">get</span>; <span class="kwd">set</span>; }
+        <span class="kwd">public</span> <span class="cls">int</span> AutorId { <span class="kwd">get</span>; <span class="kwd">set</span>; }
+        <span class="kwd">public</span> <span class="cls">string</span> Titulo { <span class="kwd">get</span>; <span class="kwd">set</span>; }
+        <span class="kwd">public</span> <span class="cls">string</span> ISBN { <span class="kwd">get</span>; <span class="kwd">set</span>; }
+        <span class="kwd">public</span> <span class="cls">int</span> AnioPublicacion { <span class="kwd">get</span>; <span class="kwd">set</span>; }
+        <span class="kwd">public</span> <span class="cls">string</span> Autor { <span class="kwd">get</span>; <span class="kwd">set</span>; }
+    }
+}</pre>
+
+  <span class="code-label">Models/ApiResponse.cs</span>
+<pre><span class="kwd">namespace</span> WebApplication1.Models
+{
+    <span class="kwd">public</span> <span class="kwd">class</span> <span class="cls">ApiResponse</span>&lt;<span class="cls">T</span>&gt;
+    {
+        <span class="kwd">public</span> <span class="cls">string</span> message { <span class="kwd">get</span>; <span class="kwd">set</span>; }
+        <span class="kwd">public</span> <span class="cls">bool</span> success { <span class="kwd">get</span>; <span class="kwd">set</span>; }
+        <span class="kwd">public</span> <span class="cls">T</span> data { <span class="kwd">get</span>; <span class="kwd">set</span>; }
+    }
+}</pre>
+
+  <div class="danger-box"><strong>&iexcl;Error que me cost&oacute; entender: "The Autor field is required"!</strong> La propiedad <code>Autor</code> de <code>Libro</code> es un <code>string</code> <strong>no anulable</strong>. Como el controlador tiene <code>[ApiController]</code>, ASP.NET valida autom&aacute;ticamente que las propiedades <code>string</code> obligatorias lleguen en el JSON. Por eso el JSON del <code>POST</code> y del <code>PUT</code> <strong>debe incluir <code>"autor"</code></strong>, aunque el SP no la use (ver <a href="#api-paso8">4.8</a>).</div>
+
+  <h3 id="api-paso4">4.4. Interfaces: IAutorService, ILibroService</h3>
+
+  <p>Definen el "contrato" de los servicios. El controlador depende de la <strong>interfaz</strong> (no de la clase concreta), y eso se resuelve con inyecci&oacute;n de dependencias en Program.cs.</p>
+
+  <span class="code-label">Interfaces/IAutorService.cs</span>
+<pre><span class="kwd">using</span> WebApplication1.Models;
+
+<span class="kwd">namespace</span> WebApplication1.Interfaces
+{
+    <span class="kwd">public</span> <span class="kwd">interface</span> <span class="ifc">IAutorService</span>
+    {
+        <span class="cls">List</span>&lt;<span class="cls">Autor</span>&gt; list();
+    }
+}</pre>
+
+  <span class="code-label">Interfaces/ILibroService.cs</span>
+<pre><span class="kwd">using</span> WebApplication1.Models;
+
+<span class="kwd">namespace</span> WebApplication1.Interfaces
+{
+    <span class="kwd">public</span> <span class="kwd">interface</span> <span class="ifc">ILibroService</span>
+    {
+        <span class="cls">List</span>&lt;<span class="cls">Libro</span>&gt; list();
+        <span class="cls">Libro</span> getById(<span class="cls">int</span> LibroId);
+        <span class="cls">bool</span> insert(<span class="cls">Libro</span> libro);
+        <span class="cls">bool</span> update(<span class="cls">Libro</span> libro);
+        <span class="cls">bool</span> delete(<span class="cls">int</span> LibroId);
+    }
+}</pre>
+
+  <div class="danger-box"><strong>Error que correg&iacute;:</strong> primero escrib&iacute; <code>bool delete(Libro libro)</code>. <strong>No</strong>: el m&eacute;todo recibe <strong>solo el id</strong> (<code>int LibroId</code>), porque para borrar no necesito el objeto completo. El controller llama <code>_service.delete(LibroId)</code>.</div>
+
+  <h3 id="api-paso5">4.5. Services: AutorService, LibroService (ADO.NET + SPs)</h3>
+
+  <p>Aqu&iacute; est&aacute; toda la l&oacute;gica de base de datos. Para crear los servicios us&eacute; el truco de Visual Studio: escribo <code>public class LibroService : ILibroService</code> y, con el cursor sobre la interfaz, presiono <strong>Alt + Enter</strong> y elijo <strong>"Implementar interfaz"</strong>. VS genera los m&eacute;todos vac&iacute;os y solo me queda llenarlos.</p>
+
+  <h4>C&oacute;mo se lee la cadena de conexi&oacute;n</h4>
+  <p>Ambos servicios reciben <code>IConfiguration</code> por constructor y guardan la cadena en un campo:</p>
+<pre>
+<span class="kwd">private readonly string?</span> conexion;
+
+<span class="kwd">public</span> <span class="fn">AutorService</span>(<span class="cls">IConfiguration</span> configuration)
+{
+    conexion = configuration.<span class="fn">GetConnectionString</span>(<span class="str">"conexion"</span>);
+}</pre>
+
+  <h4>AutorService.list(): el patr&oacute;n "List temporal + while(reader.Read())"</h4>
+
+  <span class="code-label">Services/AutorService.cs</span>
+<pre><span class="kwd">using</span> Microsoft.Data.SqlClient;
+<span class="kwd">using</span> WebApplication1.Interfaces;
+<span class="kwd">using</span> WebApplication1.Models;
+
+<span class="kwd">namespace</span> WebApplication1.Services
+{
+    <span class="kwd">public</span> <span class="kwd">class</span> <span class="cls">AutorService</span> : <span class="ifc">IAutorService</span>
+    {
+        <span class="kwd">private readonly string?</span> conexion;
+
+        <span class="kwd">public</span> <span class="fn">AutorService</span>(<span class="cls">IConfiguration</span> configuration)
+        {
+            conexion = configuration.<span class="fn">GetConnectionString</span>(<span class="str">"conexion"</span>);
+        }
+
+        <span class="kwd">public</span> <span class="cls">List</span>&lt;<span class="cls">Autor</span>&gt; <span class="fn">list</span>()
+        {
+            <span class="cls">List</span>&lt;<span class="cls">Autor</span>&gt; temporal = <span class="kwd">new</span> <span class="cls">List</span>&lt;<span class="cls">Autor</span>&gt;();
+
+            <span class="kwd">using</span> (<span class="cls">SqlConnection</span> con = <span class="kwd">new</span> <span class="cls">SqlConnection</span>(conexion))
+            {
+                <span class="kwd">using</span> (<span class="cls">SqlCommand</span> command = <span class="kwd">new</span> <span class="cls">SqlCommand</span>(<span class="str">"sp_list_autores"</span>, con))
+                {
+                    command.CommandType = <span class="cls">System.Data.CommandType</span>.<span class="fn">StoredProcedure</span>;
+                    con.<span class="fn">Open</span>();
+                    <span class="kwd">using</span> (<span class="cls">SqlDataReader</span> reader = command.<span class="fn">ExecuteReader</span>())
+                    {
+                        <span class="kwd">while</span> (reader.<span class="fn">Read</span>())
+                        {
+                            <span class="cls">Autor</span> autor = <span class="kwd">new</span> <span class="cls">Autor</span>
+                            {
+                                AutorId = reader.<span class="fn">GetInt32</span>(<span class="num">0</span>),
+                                Nombre = reader.<span class="fn">GetString</span>(<span class="num">1</span>),
+                            };
+                            temporal.<span class="fn">Add</span>(autor);
+                        }
+                    }
+                }
+            }
+            <span class="kwd">return</span> temporal;
+        }
+    }
+}</pre>
+
+  <div class="info-box"><strong>&iquest;Por qu&eacute; una lista temporal?</strong> Para las consultas de lectura (<code>list</code>) creo una <code>List</code> vac&iacute;a y la lleno fila por fila con <code>while (reader.Read())</code>. Uso <code>ExecuteReader</code> porque espero un <strong>conjunto de filas</strong> de vuelta. <code>reader.GetInt32(0)</code> lee la columna 0 (<code>AutorId</code>) y <code>reader.GetString(1)</code> la columna 1 (<code>Nombre</code>), en el <strong>orden</strong> que devuelve el SP.</div>
+
+  <h4>LibroService: los 5 m&eacute;todos (con el detalle de cada patr&oacute;n)</h4>
+
+  <span class="code-label">Services/LibroService.cs</span>
+<pre><span class="kwd">using</span> Microsoft.Data.SqlClient;
+<span class="kwd">using</span> WebApplication1.Interfaces;
+<span class="kwd">using</span> WebApplication1.Models;
+
+<span class="kwd">namespace</span> WebApplication1.Services
+{
+    <span class="kwd">public</span> <span class="kwd">class</span> <span class="cls">LibroService</span> : <span class="ifc">ILibroService</span>
+    {
+        <span class="kwd">private readonly string?</span> conexion;
+
+        <span class="kwd">public</span> <span class="fn">LibroService</span>(<span class="cls">IConfiguration</span> configuration)
+        {
+            conexion = configuration.<span class="fn">GetConnectionString</span>(<span class="str">"conexion"</span>);
+        }
+
+        <span class="cmt">// list(): mismo patr&oacute;n que AutorService, pero el SP devuelve 5 columnas</span>
+        <span class="kwd">public</span> <span class="cls">List</span>&lt;<span class="cls">Libro</span>&gt; <span class="fn">list</span>()
+        {
+            <span class="cls">List</span>&lt;<span class="cls">Libro</span>&gt; temporal = <span class="kwd">new</span> <span class="cls">List</span>&lt;<span class="cls">Libro</span>&gt;();
+
+            <span class="kwd">using</span> (<span class="cls">SqlConnection</span> con = <span class="kwd">new</span> <span class="cls">SqlConnection</span>(conexion))
+            {
+                <span class="kwd">using</span> (<span class="cls">SqlCommand</span> command = <span class="kwd">new</span> <span class="cls">SqlCommand</span>(<span class="str">"sp_list_libros"</span>, con))
+                {
+                    command.CommandType = <span class="cls">System.Data.CommandType</span>.<span class="fn">StoredProcedure</span>;
+                    con.<span class="fn">Open</span>();
+                    <span class="kwd">using</span> (<span class="cls">SqlDataReader</span> reader = command.<span class="fn">ExecuteReader</span>())
+                    {
+                        <span class="kwd">while</span> (reader.<span class="fn">Read</span>())
+                        {
+                            <span class="cls">Libro</span> libro = <span class="kwd">new</span> <span class="cls">Libro</span>
+                            {
+                                LibroId = reader.<span class="fn">GetInt32</span>(<span class="num">0</span>),
+                                Titulo = reader.<span class="fn">GetString</span>(<span class="num">1</span>),
+                                ISBN = reader.<span class="fn">GetString</span>(<span class="num">2</span>),
+                                AnioPublicacion = reader.<span class="fn">GetInt32</span>(<span class="num">3</span>),
+                                Autor = reader.<span class="fn">GetString</span>(<span class="num">4</span>),
+                            };
+                            temporal.<span class="fn">Add</span>(libro);
+                        }
+                    }
+                }
+            }
+            <span class="kwd">return</span> temporal;
+        }
+
+        <span class="cmt">// getById(): libro = null &rarr; el controller responde 404 si no encontr&oacute; filas</span>
+        <span class="kwd">public</span> <span class="cls">Libro</span> <span class="fn">getById</span>(<span class="cls">int</span> LibroId)
+        {
+            <span class="cls">Libro</span> libro = <span class="kwd">null</span>;
+
+            <span class="kwd">using</span> (<span class="cls">SqlConnection</span> con = <span class="kwd">new</span> <span class="cls">SqlConnection</span>(conexion))
+            {
+                <span class="kwd">using</span> (<span class="cls">SqlCommand</span> command = <span class="kwd">new</span> <span class="cls">SqlCommand</span>(<span class="str">"sp_find_libro_by_id"</span>, con))
+                {
+                    command.CommandType = <span class="cls">System.Data.CommandType</span>.<span class="fn">StoredProcedure</span>;
+                    command.Parameters.<span class="fn">AddWithValue</span>(<span class="str">"@LibroId"</span>, LibroId);
+                    con.<span class="fn">Open</span>();
+                    <span class="kwd">using</span> (<span class="cls">SqlDataReader</span> reader = command.<span class="fn">ExecuteReader</span>())
+                    {
+                        <span class="kwd">while</span> (reader.<span class="fn">Read</span>())
+                        {
+                            libro = <span class="kwd">new</span> <span class="cls">Libro</span>
+                            {
+                                LibroId = reader.<span class="fn">GetInt32</span>(<span class="num">0</span>),
+                                Titulo = reader.<span class="fn">GetString</span>(<span class="num">1</span>),
+                                ISBN = reader.<span class="fn">GetString</span>(<span class="num">2</span>),
+                                AnioPublicacion = reader.<span class="fn">GetInt32</span>(<span class="num">3</span>),
+                                Autor = reader.<span class="fn">GetString</span>(<span class="num">4</span>),
+                            };
+                        }
+                    }
+                }
+            }
+            <span class="kwd">return</span> libro;
+        }
+
+        <span class="cmt">// insert/update/delete: bool resp = false + ExecuteNonQuery() &gt; 0 + transacci&oacute;n</span>
+        <span class="kwd">public</span> <span class="cls">bool</span> <span class="fn">insert</span>(<span class="cls">Libro</span> libro)
+        {
+            <span class="cls">bool</span> resp = <span class="kwd">false</span>;
+
+            <span class="kwd">using</span> (<span class="cls">SqlConnection</span> con = <span class="kwd">new</span> <span class="cls">SqlConnection</span>(conexion))
+            {
+                con.<span class="fn">Open</span>();
+                <span class="cls">SqlTransaction</span> tran = con.<span class="fn">BeginTransaction</span>();
+                <span class="kwd">try</span>
+                {
+                    <span class="kwd">using</span> (<span class="cls">SqlCommand</span> command = <span class="kwd">new</span> <span class="cls">SqlCommand</span>(<span class="str">"sp_insert_libro"</span>, con))
+                    {
+                        command.Transaction = tran;
+                        command.CommandType = <span class="cls">System.Data.CommandType</span>.<span class="fn">StoredProcedure</span>;
+                        command.Parameters.<span class="fn">AddWithValue</span>(<span class="str">"@AutorId"</span>, libro.AutorId);
+                        command.Parameters.<span class="fn">AddWithValue</span>(<span class="str">"@Titulo"</span>, libro.Titulo);
+                        command.Parameters.<span class="fn">AddWithValue</span>(<span class="str">"@ISBN"</span>, libro.ISBN);
+                        command.Parameters.<span class="fn">AddWithValue</span>(<span class="str">"@AnioPublicacion"</span>, libro.AnioPublicacion);
+                        resp = command.<span class="fn">ExecuteNonQuery</span>() &gt; <span class="num">0</span>;
+                        tran.<span class="fn">Commit</span>();
+                    }
+                }
+                <span class="kwd">catch</span> (<span class="cls">Exception</span> ex)
+                {
+                    tran.<span class="fn">Rollback</span>();
+                }
+            }
+            <span class="kwd">return</span> resp;
+        }
+
+        <span class="kwd">public</span> <span class="cls">bool</span> <span class="fn">update</span>(<span class="cls">Libro</span> libro)
+        {
+            <span class="cls">bool</span> resp = <span class="kwd">false</span>;
+
+            <span class="kwd">using</span> (<span class="cls">SqlConnection</span> con = <span class="kwd">new</span> <span class="cls">SqlConnection</span>(conexion))
+            {
+                con.<span class="fn">Open</span>();
+                <span class="cls">SqlTransaction</span> tran = con.<span class="fn">BeginTransaction</span>();
+                <span class="kwd">try</span>
+                {
+                    <span class="kwd">using</span> (<span class="cls">SqlCommand</span> command = <span class="kwd">new</span> <span class="cls">SqlCommand</span>(<span class="str">"sp_update_libro"</span>, con))
+                    {
+                        command.Transaction = tran;
+                        command.CommandType = <span class="cls">System.Data.CommandType</span>.<span class="fn">StoredProcedure</span>;
+                        command.Parameters.<span class="fn">AddWithValue</span>(<span class="str">"@LibroId"</span>, libro.LibroId);
+                        command.Parameters.<span class="fn">AddWithValue</span>(<span class="str">"@AutorId"</span>, libro.AutorId);
+                        command.Parameters.<span class="fn">AddWithValue</span>(<span class="str">"@Titulo"</span>, libro.Titulo);
+                        command.Parameters.<span class="fn">AddWithValue</span>(<span class="str">"@ISBN"</span>, libro.ISBN);
+                        command.Parameters.<span class="fn">AddWithValue</span>(<span class="str">"@AnioPublicacion"</span>, libro.AnioPublicacion);
+                        resp = command.<span class="fn">ExecuteNonQuery</span>() &gt; <span class="num">0</span>;
+                        tran.<span class="fn">Commit</span>();
+                    }
+                }
+                <span class="kwd">catch</span> (<span class="cls">Exception</span> ex)
+                {
+                    tran.<span class="fn">Rollback</span>();
+                }
+            }
+            <span class="kwd">return</span> resp;
+        }
+
+        <span class="kwd">public</span> <span class="cls">bool</span> <span class="fn">delete</span>(<span class="cls">int</span> LibroId)
+        {
+            <span class="cls">bool</span> resp = <span class="kwd">false</span>;
+
+            <span class="kwd">using</span> (<span class="cls">SqlConnection</span> con = <span class="kwd">new</span> <span class="cls">SqlConnection</span>(conexion))
+            {
+                con.<span class="fn">Open</span>();
+                <span class="cls">SqlTransaction</span> tran = con.<span class="fn">BeginTransaction</span>();
+                <span class="kwd">try</span>
+                {
+                    <span class="kwd">using</span> (<span class="cls">SqlCommand</span> command = <span class="kwd">new</span> <span class="cls">SqlCommand</span>(<span class="str">"sp_delete_libro"</span>, con))
+                    {
+                        command.Transaction = tran;
+                        command.CommandType = <span class="cls">System.Data.CommandType</span>.<span class="fn">StoredProcedure</span>;
+                        command.Parameters.<span class="fn">AddWithValue</span>(<span class="str">"@LibroId"</span>, LibroId);
+                        resp = command.<span class="fn">ExecuteNonQuery</span>() &gt; <span class="num">0</span>;
+                        tran.<span class="fn">Commit</span>();
+                    }
+                }
+                <span class="kwd">catch</span> (<span class="cls">Exception</span> ex)
+                {
+                    tran.<span class="fn">Rollback</span>();
+                }
+            }
+            <span class="kwd">return</span> resp;
+        }
+    }
+}</pre>
+
+  <div class="info-box"><strong>Resumen de los 3 patrones de Service:</strong>
+    <ul>
+      <li><strong><code>list()</code></strong> &rarr; <code>ExecuteReader</code> + <code>List</code> temporal que se llena en <code>while (reader.Read())</code>.</li>
+      <li><strong><code>getById()</code></strong> &rarr; <code>ExecuteReader</code>, pero inicializo <code>libro = null</code>: si el SP no devuelve filas, queda <code>null</code> y el controller responde <strong>404</strong>. <strong>Obligatorio</strong> pasar el par&aacute;metro <code>@LibroId</code>.</li>
+      <li><strong><code>insert/update/delete</code></strong> &rarr; <code>bool resp = false</code>, <code>ExecuteNonQuery() &gt; 0</code> devuelve cu&aacute;ntas filas afect&oacute; (1 si funcion&oacute;), y todo va dentro de una <strong>transacci&oacute;n</strong> (<code>BeginTransaction</code> + <code>Commit</code>/<code>Rollback</code>). Para escritura se usa <code>ExecuteNonQuery</code>, no <code>ExecuteReader</code>.</li>
+    </ul>
+  </div>
+
+  <div class="danger-box"><strong>Dos errores que tuve en los Services:</strong>
+    <ol>
+      <li>En <code>getById</code> olvid&eacute; <code>command.Parameters.AddWithValue("@LibroId", LibroId)</code> &rarr; la API devolv&iacute;a <strong>500</strong> con el error <em>"Procedure expects parameter '@LibroId'"</em>.</li>
+      <li>Puse <code>using System.Windows.Input;</code> (un namespace de WPF, no existe en un proyecto Web) &rarr; error de compilaci&oacute;n. <strong>En web se usa <code>Microsoft.Data.SqlClient</code>.</strong></li>
+    </ol>
+  </div>
+
+  <h3 id="api-paso6">4.6. Controllers: AutorController, LibroController</h3>
+
+  <p>Los controladores exponen los endpoints HTTP, llaman al servicio (v&iacute;a interfaz) y forman la respuesta con <code>ApiResponse&lt;T&gt;</code>. Nota: <code>AutorController</code> responde la lista "cruda" (sin <code>ApiResponse</code>), y <code>LibroController</code> s&iacute; envuelve las respuestas de los casos especiales.</p>
+
+  <span class="code-label">Controllers/AutorController.cs</span>
+<pre><span class="kwd">using</span> Microsoft.AspNetCore.Http;
+<span class="kwd">using</span> Microsoft.AspNetCore.Mvc;
+<span class="kwd">using</span> WebApplication1.Interfaces;
+
+<span class="kwd">namespace</span> WebApplication1.Controllers
+{
+    <span class="ann">[Route</span>(<span class="str">"api/[controller]"</span><span class="ann">)]</span>
+    <span class="ann">[ApiController]</span>
+    <span class="kwd">public</span> <span class="kwd">class</span> <span class="cls">AutorController</span> : <span class="cls">ControllerBase</span>
+    {
+        <span class="kwd">private readonly</span> <span class="ifc">IAutorService</span> _service;
+
+        <span class="kwd">public</span> <span class="fn">AutorController</span>(<span class="ifc">IAutorService</span> service)
+        {
+            _service = service;
+        }
+
+        <span class="ann">[HttpGet]</span>
+        <span class="kwd">public async</span> <span class="cls">Task</span>&lt;<span class="cls">IActionResult</span>&gt; <span class="fn">Get</span>()
+        {
+            <span class="kwd">var</span> autores = _service.<span class="fn">list</span>();
+            <span class="kwd">return</span> <span class="fn">Ok</span>(<span class="kwd">await</span> <span class="cls">Task</span>.<span class="fn">Run</span>(() =&gt; autores));
+        }
+    }
+}</pre>
+
+  <span class="code-label">Controllers/LibroController.cs</span>
+<pre><span class="kwd">using</span> Microsoft.AspNetCore.Http;
+<span class="kwd">using</span> Microsoft.AspNetCore.Mvc;
+<span class="kwd">using</span> WebApplication1.Interfaces;
+<span class="kwd">using</span> WebApplication1.Models;
+
+<span class="kwd">namespace</span> WebApplication1.Controllers
+{
+    <span class="ann">[Route</span>(<span class="str">"api/[controller]"</span><span class="ann">)]</span>
+    <span class="ann">[ApiController]</span>
+    <span class="kwd">public</span> <span class="kwd">class</span> <span class="cls">LibroController</span> : <span class="cls">ControllerBase</span>
+    {
+        <span class="kwd">private readonly</span> <span class="ifc">ILibroService</span> _service;
+
+        <span class="kwd">public</span> <span class="fn">LibroController</span>(<span class="ifc">ILibroService</span> service)
+        {
+            _service = service;
+        }
+
+        <span class="ann">[HttpGet]</span>
+        <span class="kwd">public async</span> <span class="cls">Task</span>&lt;<span class="cls">IActionResult</span>&gt; <span class="fn">Get</span>()
+        {
+            <span class="kwd">var</span> libros = _service.<span class="fn">list</span>();
+            <span class="kwd">return</span> <span class="fn">Ok</span>(<span class="kwd">await</span> <span class="cls">Task</span>.<span class="fn">Run</span>(() =&gt; libros));
+        }
+
+        <span class="ann">[HttpGet("{LibroId}")]</span>
+        <span class="kwd">public async</span> <span class="cls">Task</span>&lt;<span class="cls">IActionResult</span>&gt; <span class="fn">GetById</span>(<span class="cls">int</span> LibroId)
+        {
+            <span class="kwd">var</span> libro = _service.<span class="fn">getById</span>(LibroId);
+            <span class="kwd">if</span> (libro == <span class="kwd">null</span>)
+            {
+                <span class="kwd">return</span> <span class="fn">NotFound</span>(<span class="kwd">new</span> <span class="cls">ApiResponse</span>&lt;<span class="cls">object</span>&gt;
+                {
+                    message = <span class="str">"No se encontr&oacute; el libro con el id "</span> + LibroId,
+                    success = <span class="kwd">false</span>,
+                    data = <span class="str">""</span>
+                });
+            }
+            <span class="kwd">else</span>
+            {
+                <span class="kwd">return</span> <span class="fn">Ok</span>(<span class="kwd">new</span> <span class="cls">ApiResponse</span>&lt;<span class="cls">Libro</span>&gt;
+                {
+                    message = <span class="str">"Libro encontrado!"</span>,
+                    success = <span class="kwd">true</span>,
+                    data = libro
+                });
+            }
+        }
+
+        <span class="ann">[HttpPost]</span>
+        <span class="kwd">public async</span> <span class="cls">Task</span>&lt;<span class="cls">IActionResult</span>&gt; <span class="fn">Post</span>(<span class="ann">[FromBody]</span> <span class="cls">Libro</span> libro)
+        {
+            <span class="cls">bool</span> resp = _service.<span class="fn">insert</span>(libro);
+            <span class="kwd">if</span> (resp)
+            {
+                <span class="kwd">return</span> <span class="fn">Ok</span>(<span class="kwd">new</span> <span class="cls">ApiResponse</span>&lt;<span class="cls">Libro</span>&gt;
+                {
+                    message = <span class="str">"Libro insertado correctamente!"</span>,
+                    success = <span class="kwd">true</span>,
+                    data = libro
+                });
+            }
+            <span class="kwd">else</span>
+            {
+                <span class="kwd">return</span> <span class="fn">BadRequest</span>(<span class="kwd">new</span> <span class="cls">ApiResponse</span>&lt;<span class="cls">object</span>&gt;
+                {
+                    message = <span class="str">"No se registr&oacute; libro!"</span>,
+                    success = <span class="kwd">false</span>,
+                    data = <span class="str">""</span>
+                });
+            }
+        }
+
+        <span class="ann">[HttpPut]</span>
+        <span class="kwd">public async</span> <span class="cls">Task</span>&lt;<span class="cls">IActionResult</span>&gt; <span class="fn">Put</span>(<span class="ann">[FromBody]</span> <span class="cls">Libro</span> libro)
+        {
+            <span class="cls">Libro</span> lib = _service.<span class="fn">getById</span>(libro.LibroId);
+            <span class="kwd">if</span> (lib == <span class="kwd">null</span>)
+            {
+                <span class="kwd">return</span> <span class="fn">NotFound</span>(<span class="kwd">new</span> <span class="cls">ApiResponse</span>&lt;<span class="cls">object</span>&gt;
+                {
+                    message = <span class="str">"No se encontr&oacute; libro para actualizar!"</span>,
+                    success = <span class="kwd">false</span>,
+                    data = <span class="str">""</span>
+                });
+            }
+            <span class="kwd">else</span>
+            {
+                <span class="cls">bool</span> resp = _service.<span class="fn">update</span>(libro);
+                <span class="kwd">if</span> (resp)
+                {
+                    <span class="kwd">return</span> <span class="fn">Ok</span>(<span class="kwd">new</span> <span class="cls">ApiResponse</span>&lt;<span class="cls">Libro</span>&gt;
+                    {
+                        message = <span class="str">"Libro actualizado correctamente!"</span>,
+                        success = <span class="kwd">true</span>,
+                        data = libro
+                    });
+                }
+                <span class="kwd">else</span>
+                {
+                    <span class="kwd">return</span> <span class="fn">BadRequest</span>(<span class="kwd">new</span> <span class="cls">ApiResponse</span>&lt;<span class="cls">object</span>&gt;
+                    {
+                        message = <span class="str">"Ocurri&oacute; un error al actualizar libro!"</span>,
+                        success = <span class="kwd">false</span>,
+                        data = <span class="str">""</span>
+                    });
+                }
+            }
+        }
+
+        <span class="ann">[HttpDelete("{LibroId}")]</span>
+        <span class="kwd">public async</span> <span class="cls">Task</span>&lt;<span class="cls">IActionResult</span>&gt; <span class="fn">Delete</span>(<span class="cls">int</span> LibroId)
+        {
+            <span class="cls">Libro</span> lib = _service.<span class="fn">getById</span>(LibroId);
+            <span class="kwd">if</span> (lib == <span class="kwd">null</span>)
+            {
+                <span class="kwd">return</span> <span class="fn">NotFound</span>(<span class="kwd">new</span> <span class="cls">ApiResponse</span>&lt;<span class="cls">object</span>&gt;
+                {
+                    message = <span class="str">"No se encontr&oacute; libro para eliminar!"</span>,
+                    success = <span class="kwd">false</span>,
+                    data = <span class="str">""</span>
+                });
+            }
+            <span class="kwd">else</span>
+            {
+                <span class="cls">bool</span> resp = _service.<span class="fn">delete</span>(LibroId);
+                <span class="kwd">if</span> (resp)
+                {
+                    <span class="kwd">return</span> <span class="fn">Ok</span>(<span class="kwd">new</span> <span class="cls">ApiResponse</span>&lt;<span class="cls">Libro</span>&gt;
+                    {
+                        message = <span class="str">"Libro eliminado correctamente!"</span>,
+                        success = <span class="kwd">true</span>,
+                        data = lib
+                    });
+                }
+                <span class="kwd">else</span>
+                {
+                    <span class="kwd">return</span> <span class="fn">BadRequest</span>(<span class="kwd">new</span> <span class="cls">ApiResponse</span>&lt;<span class="cls">object</span>&gt;
+                    {
+                        message = <span class="str">"Ocurri&oacute; un error al eliminar libro!"</span>,
+                        success = <span class="kwd">false</span>,
+                        data = <span class="str">""</span>
+                    });
+                }
+            }
+        }
+    }
+}</pre>
+
+  <div class="info-box"><strong>Patr&oacute;n de los controllers:</strong> primero <strong>valido la existencia</strong> con <code>getById</code> (si <code>null</code> &rarr; <code>NotFound</code> con mensaje), luego ejecuto la operaci&oacute;n y devuelvo <code>Ok</code> o <code>BadRequest</code> seg&uacute;n el <code>bool</code> que devuelve el service.</div>
+
+  <div class="warn-box"><strong>Diferencia clave del PUT:</strong> <code>[HttpPut]</code> <strong>sin <code>{LibroId}</code></strong>. El id llega en el body. (Lo escrib&iacute; mal primero con <code>[HttpPut("{LibroId}")]</code> y Swagger mostraba un par&aacute;metro extra en la URL.)</div>
+
+  <h3 id="api-paso7">4.7. Program.cs (se deja para el final) y launchSettings.json</h3>
+
+  <p><strong>Program.cs</strong> es el punto de entrada y donde se registra la <strong>inyecci&oacute;n de dependencias</strong> con <code>AddScoped</code>. Lo dej&eacute; para el final porque hace referencia a <code>Interfaces</code> y <code>Services</code> que ya deb&iacute;an existir.</p>
+
+  <span class="code-label">Program.cs</span>
+<pre><span class="kwd">using</span> WebApplication1.Interfaces;
+<span class="kwd">using</span> WebApplication1.Services;
+
+<span class="kwd">var</span> builder = <span class="cls">WebApplication</span>.<span class="fn">CreateBuilder</span>(args);
+
+<span class="cmt">// Add services to the container.</span>
+
+builder.Services.<span class="fn">AddControllers</span>();
+<span class="cmt">// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle</span>
+builder.Services.<span class="fn">AddEndpointsApiExplorer</span>();
+builder.Services.<span class="fn">AddSwaggerGen</span>();
+
+<span class="cmt">// Registro de los servicios con sus interfaces (inyecci&oacute;n de dependencias)</span>
+builder.Services.<span class="fn">AddScoped</span>&lt;<span class="ifc">IAutorService</span>, <span class="cls">AutorService</span>&gt;();
+builder.Services.<span class="fn">AddScoped</span>&lt;<span class="ifc">ILibroService</span>, <span class="cls">LibroService</span>&gt;();
+
+<span class="kwd">var</span> app = builder.<span class="fn">Build</span>();
+
+<span class="cmt">// Configure the HTTP request pipeline.</span>
+<span class="kwd">if</span> (app.Environment.<span class="fn">IsDevelopment</span>())
+{
+    app.<span class="fn">UseSwagger</span>();
+    app.<span class="fn">UseSwaggerUI</span>();
+}
+
+app.<span class="fn">UseHttpsRedirection</span>();
+
+app.<span class="fn">UseAuthorization</span>();
+
+app.<span class="fn">MapControllers</span>();
+
+app.<span class="fn">Run</span>();</pre>
+
+  <div class="info-box"><strong>&iquest;Qu&eacute; hace <code>AddScoped</code>?</strong> Le dice a ASP.NET: "cuando alguien pida <code>IAutorService</code>, dale un <code>AutorService</code>". La interfaz es lo que inyecto en los controllers; la clase concreta es la implementaci&oacute;n. Sin esta l&iacute;nea, la app falla al arrancar con un error de dependencia no resuelta.</div>
+
+  <p>El <strong>launchSettings.json</strong> define los perfiles de ejecuci&oacute;n. El perfil activo en mi r&eacute;plica es <strong>https</strong> (lo fija el <code>WebApplication1.csproj.user</code> con <code>&lt;ActiveDebugProfile&gt;https&lt;/ActiveDebugProfile&gt;</code>), y su URL es <code>https://localhost:7229</code>:</p>
+
+  <span class="code-label">Properties/launchSettings.json</span>
+<pre>{
+  <span class="str">"$schema"</span>: <span class="str">"https://json.schemastore.org/launchsettings.json"</span>,
+  <span class="str">"iisSettings"</span>: {
+    <span class="str">"windowsAuthentication"</span>: <span class="kwd">false</span>,
+    <span class="str">"anonymousAuthentication"</span>: <span class="kwd">true</span>,
+    <span class="str">"iisExpress"</span>: {
+      <span class="str">"applicationUrl"</span>: <span class="str">"http://localhost:64057"</span>,
+      <span class="str">"sslPort"</span>: <span class="num">44342</span>
+    }
+  },
+  <span class="str">"profiles"</span>: {
+    <span class="str">"http"</span>: {
+      <span class="str">"commandName"</span>: <span class="str">"Project"</span>,
+      <span class="str">"dotnetRunMessages"</span>: <span class="kwd">true</span>,
+      <span class="str">"launchBrowser"</span>: <span class="kwd">true</span>,
+      <span class="str">"launchUrl"</span>: <span class="str">"swagger"</span>,
+      <span class="str">"applicationUrl"</span>: <span class="str">"http://localhost:5255"</span>,
+      <span class="str">"environmentVariables"</span>: {
+        <span class="str">"ASPNETCORE_ENVIRONMENT"</span>: <span class="str">"Development"</span>
+      }
+    },
+    <span class="str">"https"</span>: {
+      <span class="str">"commandName"</span>: <span class="str">"Project"</span>,
+      <span class="str">"dotnetRunMessages"</span>: <span class="kwd">true</span>,
+      <span class="str">"launchBrowser"</span>: <span class="kwd">true</span>,
+      <span class="str">"launchUrl"</span>: <span class="str">"swagger"</span>,
+      <span class="str">"applicationUrl"</span>: <span class="str">"https://localhost:7229;http://localhost:5255"</span>,
+      <span class="str">"environmentVariables"</span>: {
+        <span class="str">"ASPNETCORE_ENVIRONMENT"</span>: <span class="str">"Development"</span>
+      }
+    },
+    <span class="str">"IIS Express"</span>: {
+      <span class="str">"commandName"</span>: <span class="str">"IISExpress"</span>,
+      <span class="str">"launchBrowser"</span>: <span class="kwd">true</span>,
+      <span class="str">"launchUrl"</span>: <span class="str">"swagger"</span>,
+      <span class="str">"environmentVariables"</span>: {
+        <span class="str">"ASPNETCORE_ENVIRONMENT"</span>: <span class="str">"Development"</span>
+      }
+    }
+  }
+}</pre>
+
+  <h3 id="api-paso8">4.8. Compilar, ejecutar y probar en Swagger (los 6 endpoints)</h3>
+
+  <p>Para levantar la API: presiono <strong>F5</strong> en Visual Studio (perfil <code>https</code>) o ejecuto <code>dotnet run</code> en la carpeta del proyecto. Se abre el navegador en <strong>Swagger</strong>: <code>https://localhost:7229/swagger</code>.</p>
+
+  <p>Las pruebas que hice (todas dieron el resultado esperado):</p>
+
+  <table>
+    <tr><th>Prueba</th><th>C&oacute;mo</th><th>Resultado</th></tr>
+    <tr><td><code>GET api/Autor</code></td><td>Swagger &rarr; Autor &rarr; Try it out &rarr; Execute</td><td><code>200</code> con los 2 autores en JSON</td></tr>
+    <tr><td><code>GET api/Libro</code></td><td>Swagger &rarr; Libro &rarr; Execute</td><td><code>200</code> con los libros (JOIN con nombre del autor)</td></tr>
+    <tr><td><code>GET api/Libro/1</code></td><td>Escribir <code>LibroId = 1</code></td><td><code>200</code> con <code>ApiResponse</code> "Libro encontrado!"</td></tr>
+    <tr><td><code>POST api/Libro</code></td><td>Body con <code>"autor"</code> incluido (ver JSON abajo)</td><td><code>200</code> "Libro insertado correctamente!"</td></tr>
+    <tr><td><code>PUT api/Libro</code></td><td>Body con <code>libroId</code> de un libro existente</td><td><code>200</code> "Libro actualizado correctamente!"</td></tr>
+    <tr><td><code>DELETE api/Libro/{id}</code></td><td>Borro un libro reci&eacute;n insertado</td><td><code>200</code> "Libro eliminado correctamente!"</td></tr>
+  </table>
+
+  <h4>JSON de prueba que funcion&oacute; en POST</h4>
+  <div class="postman">
+    <strong>POST https://localhost:7229/api/Libro</strong> &mdash; body (JSON):
+<pre>{
+  <span class="str">"autorId"</span>: <span class="num">1</span>,
+  <span class="str">"titulo"</span>: <span class="str">"Cr&oacute;nica de una muerte anunciada"</span>,
+  <span class="str">"isbn"</span>: <span class="str">"9781400034950"</span>,
+  <span class="str">"anioPublicacion"</span>: <span class="num">1981</span>,
+  <span class="str">"autor"</span>: <span class="str">"Gabriel Garc&iacute;a M&aacute;rquez"</span>
+}</pre>
+    <strong>Respuesta:</strong> <code>200</code> &mdash; <code>"Libro insertado correctamente!"</code> (el libro qued&oacute; con <code>LibroId</code> 3).<br>
+    <em>&iquest;Por qu&eacute; va <code>"autor"</code> si el SP no lo usa? Por la validaci&oacute;n de <code>[ApiController]</code> sobre la propiedad <code>string</code> no anulable (ver <a href="#api-paso3">4.3</a>). Si lo quito, devuelve <code>400</code>.</em>
+  </div>
+
+  <h4>JSON de prueba que funcion&oacute; en PUT</h4>
+  <div class="postman">
+    <strong>PUT https://localhost:7229/api/Libro</strong> &mdash; body (JSON, <strong>el id va aqu&iacute;</strong>, no en la URL):
+<pre>{
+  <span class="str">"libroId"</span>: <span class="num">3</span>,
+  <span class="str">"autorId"</span>: <span class="num">2</span>,
+  <span class="str">"titulo"</span>: <span class="str">"Cr&oacute;nica de una muerte anunciada (edici&oacute;n 2003)"</span>,
+  <span class="str">"isbn"</span>: <span class="str">"9781400034950"</span>,
+  <span class="str">"anioPublicacion"</span>: <span class="num">2003</span>,
+  <span class="str">"autor"</span>: <span class="str">"Gabriel Garc&iacute;a M&aacute;rquez"</span>
+}</pre>
+    <strong>Respuesta:</strong> <code>200</code> &mdash; <code>"Libro actualizado correctamente!"</code>. Dej&eacute; el mismo ISBN porque al actualizar la misma fila no choca con el <code>UNIQUE</code> (solo fallar&iacute;a si duplicara un ISBN de otra fila).
+  </div>
+
+  <h4>Verificaci&oacute;n del estado en la base</h4>
+  <div class="ssms">
+    <strong>Desde SSMS o sqlcmd</strong> &mdash; confirmo que los cambios llegaron:
+<pre>
+SELECT LibroId, AutorId, Titulo, ISBN, AnioPublicacion FROM DB_BIBLIOTECA.dbo.Libro</pre>
+    <em>Ah&iacute; veo los libros de prueba (id 1 y 2) y el que insert&eacute;/actualic&eacute; en mis pruebas (id 3).</em>
+  </div>
+
+  <div class="danger-box"><strong>Caso de error esperado (controlado):</strong> si hago <code>DELETE api/Libro/999</code> (un id que no existe), el controller llama a <code>getById(999)</code>, recibe <code>null</code> y devuelve <strong><code>404</code></strong> con <code>"No se encontr&oacute; libro para eliminar!"</code>. Eso es el comportamiento correcto.</div>
+</div>
+
+<!-- ============================================================ -->
+<div class="section-card" id="cliente">
+  <h2>5. PROYECTO 2: El cliente MVC (MiReplica\ConsumoServicios\WebApplication1)</h2>
+
+  <p>Este es el proyecto que <strong>"consume los servicios"</strong> de la API. Es un <strong>ASP.NET Core MVC</strong> normal, con una diferencia clave: <strong>no toca la base de datos</strong>. Sus controllers piden los datos a la API por <strong>HTTP</strong> usando <code>HttpClient</code> y deserializan el JSON de respuesta.</p>
+
+  <h3 id="cliente-paso1">5.1. Crear el proyecto y los paquetes NuGet (Newtonsoft.Json, NO SqlClient)</h3>
+
+  <p>El proyecto lo cre&eacute; con el CLI de .NET (target <code>net7.0</code>):</p>
+<pre>
+dotnet new mvc -n WebApplication1 -f net7.0 -o WebApplication1</pre>
+
+  <p>El proyecto MVC viene con sus carpetas (Controllers, Views, wwwroot, etc.). Despu&eacute;s, <strong>desde el Administrador de paquetes NuGet de VS</strong>, agregu&eacute; el paquete que el cliente S&Iacute; necesita:</p>
+
+  <table>
+    <tr><th>Paquete</th><th>Versi&oacute;n</th><th>&iquest;Por qu&eacute;?</th></tr>
+    <tr><td><code>Newtonsoft.Json</code></td><td><code>13.0.1</code></td><td>Deserializar el JSON que devuelve la API (<code>JsonConvert.DeserializeObject</code>)</td></tr>
+  </table>
+
+  <div class="danger-box"><strong>Lecci&oacute;n aprendida: el cliente NO lleva <code>Microsoft.Data.SqlClient</code>.</strong> Primero se lo agregu&eacute; por costumbre (porque la API lo usa), pero el cliente <strong>nunca habla con SQL Server</strong> &mdash; solo consume la API por HTTP. Tenerlo no rompe nada, pero es innecesario y confunde el rol de cada proyecto. Lo quito. El <code>SqlClient</code> es <strong>exclusivo de la WebApi</strong>.</div>
+
+  <p>El archivo <code>WebApplication1.csproj</code> del cliente queda as&iacute;:</p>
+
+  <span class="code-label">WebApplication1.csproj (cliente)</span>
+<pre>
+<span class="tag">&lt;Project</span> <span class="attr">Sdk</span>=<span class="str">"Microsoft.NET.Sdk.Web"</span><span class="tag">&gt;</span>
+
+  <span class="tag">&lt;PropertyGroup&gt;</span>
+    <span class="tag">&lt;TargetFramework&gt;</span>net7.0<span class="tag">&lt;/TargetFramework&gt;</span>
+    <span class="tag">&lt;Nullable&gt;</span>enable<span class="tag">&lt;/Nullable&gt;</span>
+    <span class="tag">&lt;ImplicitUsings&gt;</span>enable<span class="tag">&lt;/ImplicitUsings&gt;</span>
+  <span class="tag">&lt;/PropertyGroup&gt;</span>
+
+  <span class="tag">&lt;ItemGroup&gt;</span>
+    <span class="tag">&lt;PackageReference</span> <span class="attr">Include</span>=<span class="str">"Newtonsoft.Json"</span> <span class="attr">Version</span>=<span class="str">"13.0.1"</span> <span class="tag">/&gt;</span>
+  <span class="tag">&lt;/ItemGroup&gt;</span>
+
+<span class="tag">&lt;/Project&gt;</span></pre>
+
+  <div class="info-box"><strong>&iquest;Por qu&eacute; Newtonsoft.Json y no System.Text.Json?</strong> Porque el profe usa <code>JsonConvert.DeserializeObject</code> (Newtonsoft). En la API, Newtonsoft llegaba <em>de paso</em> por Swashbuckle; en el cliente lo declaro <strong>expl&iacute;cito</strong> para no depender de dependencias transitivas.</div>
+
+  <h3 id="cliente-paso2">5.2. Program.cs (MVC + AddHttpClient)</h3>
+
+  <p>Igual que la plantilla MVC, pero con un cambio esencial: <code>builder.Services.AddHttpClient()</code> para poder inyectar <code>HttpClient</code> en los controllers.</p>
+
+  <span class="code-label">Program.cs (cliente)</span>
+<pre><span class="kwd">var</span> builder = <span class="cls">WebApplication</span>.<span class="fn">CreateBuilder</span>(args);
+
+<span class="cmt">// Add services to the container.</span>
+builder.Services.<span class="fn">AddControllersWithViews</span>();
+builder.Services.<span class="fn">AddHttpClient</span>();
+
+<span class="kwd">var</span> app = builder.<span class="fn">Build</span>();
+
+<span class="cmt">// Configure the HTTP request pipeline.</span>
+<span class="kwd">if</span> (!app.Environment.<span class="fn">IsDevelopment</span>())
+{
+    app.<span class="fn">UseExceptionHandler</span>(<span class="str">"/Home/Error"</span>);
+    <span class="cmt">// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.</span>
+    app.<span class="fn">UseHsts</span>();
+}
+
+app.<span class="fn">UseHttpsRedirection</span>();
+app.<span class="fn">UseStaticFiles</span>();
+
+app.<span class="fn">UseRouting</span>();
+
+app.<span class="fn">UseAuthorization</span>();
+
+app.<span class="fn">MapControllerRoute</span>(
+    name: <span class="str">"default"</span>,
+    pattern: <span class="str">"{controller=Home}/{action=Index}/{id?}"</span>);
+
+app.<span class="fn">Run</span>();</pre>
+
+  <div class="info-box"><strong>&iquest;Qu&eacute; hace <code>AddHttpClient()</code>?</strong> Registra <code>HttpClient</code> en el contenedor de dependencias. As&iacute; el constructor de <code>AutorController(HttpClient httpClient)</code> recibe un cliente listo y no tengo que crear instancias manualmente.</div>
+
+  <h3 id="cliente-paso3">5.3. Models: Autor, Libro, ApiResponse&lt;T&gt;</h3>
+
+  <p>Son los mismos Models que la API. El cliente los necesita para que <code>JsonConvert</code> pueda <strong>mapear el JSON</strong> de la respuesta a objetos C#. Los nombres de las propiedades deben coincidir con los del JSON.</p>
+
+  <span class="code-label">Models/Autor.cs (cliente)</span>
+<pre><span class="kwd">namespace</span> WebApplication1.Models
+{
+    <span class="kwd">public</span> <span class="kwd">class</span> <span class="cls">Autor</span>
+    {
+        <span class="kwd">public</span> <span class="cls">int</span> AutorId { <span class="kwd">get</span>; <span class="kwd">set</span>; }
+        <span class="kwd">public</span> <span class="cls">string</span> Nombre { <span class="kwd">get</span>; <span class="kwd">set</span>; }
+        <span class="kwd">public</span> <span class="cls">string</span> Nacionalidad { <span class="kwd">get</span>; <span class="kwd">set</span>; }
+    }
+}</pre>
+
+  <span class="code-label">Models/Libro.cs (cliente)</span>
+<pre><span class="kwd">namespace</span> WebApplication1.Models
+{
+    <span class="kwd">public</span> <span class="kwd">class</span> <span class="cls">Libro</span>
+    {
+        <span class="kwd">public</span> <span class="cls">int</span> LibroId { <span class="kwd">get</span>; <span class="kwd">set</span>; }
+        <span class="kwd">public</span> <span class="cls">int</span> AutorId { <span class="kwd">get</span>; <span class="kwd">set</span>; }
+        <span class="kwd">public</span> <span class="cls">string</span> Titulo { <span class="kwd">get</span>; <span class="kwd">set</span>; }
+        <span class="kwd">public</span> <span class="cls">string</span> ISBN { <span class="kwd">get</span>; <span class="kwd">set</span>; }
+        <span class="kwd">public</span> <span class="cls">int</span> AnioPublicacion { <span class="kwd">get</span>; <span class="kwd">set</span>; }
+        <span class="kwd">public</span> <span class="cls">string</span> Autor { <span class="kwd">get</span>; <span class="kwd">set</span>; }
+    }
+}</pre>
+
+  <span class="code-label">Models/ApiResponse.cs (cliente)</span>
+<pre><span class="kwd">namespace</span> WebApplication1.Models
+{
+    <span class="kwd">public</span> <span class="kwd">class</span> <span class="cls">ApiResponse</span>&lt;<span class="cls">T</span>&gt;
+    {
+        <span class="kwd">public</span> <span class="cls">string</span> message { <span class="kwd">get</span>; <span class="kwd">set</span>; }
+        <span class="kwd">public</span> <span class="cls">bool</span> success { <span class="kwd">get</span>; <span class="kwd">set</span>; }
+        <span class="kwd">public</span> <span class="cls">T</span> data { <span class="kwd">get</span>; <span class="kwd">set</span>; }
+    }
+}</pre>
+
+  <h3 id="cliente-paso4">5.4. Controllers/AutorController.cs (el consumidor con HttpClient)</h3>
+
+  <p>Este es el coraz&oacute;n del cliente. Aqu&iacute; est&aacute; la <strong>regla del puerto</strong> aplicada: <code>apiBase = "https://localhost:7229"</code>. El controller inyecta <code>HttpClient</code>, hace <code>GET</code> a <code>api/Autor</code> y deserializa la respuesta.</p>
+
+  <span class="code-label">Controllers/AutorController.cs (cliente)</span>
+<pre><span class="kwd">using</span> Microsoft.AspNetCore.Mvc;
+<span class="kwd">using</span> Newtonsoft.Json;
+<span class="kwd">using</span> WebApplication1.Models;
+
+<span class="kwd">namespace</span> WebApplication1.Controllers
+{
+    <span class="kwd">public</span> <span class="kwd">class</span> <span class="cls">AutorController</span> : <span class="cls">Controller</span>
+    {
+        <span class="kwd">private readonly</span> <span class="cls">HttpClient</span> _httpClient;
+        <span class="kwd">private readonly string</span> apiBase = <span class="str">"https://localhost:7229"</span>;
+
+        <span class="kwd">public</span> <span class="fn">AutorController</span>(<span class="cls">HttpClient</span> httpClient)
+        {
+            _httpClient = httpClient;
+            _httpClient.BaseAddress = <span class="kwd">new</span> <span class="cls">Uri</span>(apiBase);
+        }
+
+        <span class="kwd">public async</span> <span class="cls">Task</span>&lt;<span class="cls">IActionResult</span>&gt; <span class="fn">Index</span>()
+        {
+            <span class="kwd">var</span> resp = <span class="kwd">await</span> _httpClient.<span class="fn">GetAsync</span>(<span class="str">"api/Autor"</span>);
+            <span class="kwd">var</span> contenido = resp.Content.<span class="fn">ReadAsStringAsync</span>().<span class="fn">Result</span>;
+            <span class="cls">List</span>&lt;<span class="cls">Autor</span>&gt; lista = <span class="cls">JsonConvert</span>.<span class="fn">DeserializeObject</span>&lt;<span class="cls">List</span>&lt;<span class="cls">Autor</span>&gt;&gt;(contenido);
+            <span class="kwd">return</span> <span class="fn">View</span>(<span class="kwd">await</span> <span class="cls">Task</span>.<span class="fn">Run</span>(() =&gt; lista));
+        }
+    }
+}</pre>
+
+  <div class="info-box"><strong>Paso a paso del consumo:</strong> (1) <code>BaseAddress</code> apunta a la API; (2) <code>GetAsync("api/Autor")</code> hace la llamada HTTP a <code>https://localhost:7229/api/Autor</code>; (3) <code>ReadAsStringAsync</code> lee el body como texto (JSON); (4) <code>JsonConvert.DeserializeObject&lt;List&lt;Autor&gt;&gt;</code> convierte el JSON en una lista de objetos; (5) <code>View(lista)</code> pasa esa lista a la vista.</div>
+
+  <h3 id="cliente-paso5">5.5. La vista clave: Views/Autor/Index.cshtml</h3>
+
+  <p>Recibe <code>IEnumerable&lt;Autor&gt;</code> (el modelo) y lo pinta en una tabla con Razor. Es la misma vista que genera el scaffolding del profe.</p>
+
+  <span class="code-label">Views/Autor/Index.cshtml (cliente)</span>
+<pre><span class="tag">@model</span> IEnumerable&lt;WebApplication1.Models.Autor&gt;
+
+<span class="tag">@{</span>
+    ViewData[<span class="str">"Title"</span>] = <span class="str">"Index"</span>;
+<span class="tag">}</span>
+
+<span class="tag">&lt;h1&gt;</span>Index<span class="tag">&lt;/h1&gt;</span>
+
+<span class="tag">&lt;p&gt;</span>
+    <span class="tag">&lt;a</span> <span class="attr">asp-action</span>=<span class="str">"Create"</span><span class="tag">&gt;</span>Create New<span class="tag">&lt;/a&gt;</span>
+<span class="tag">&lt;/p&gt;</span>
+<span class="tag">&lt;table</span> <span class="attr">class</span>=<span class="str">"table"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;thead&gt;</span>
+        <span class="tag">&lt;tr&gt;</span>
+            <span class="tag">&lt;th&gt;</span>
+                <span class="tag">@Html.DisplayNameFor</span>(model =&gt; model.AutorId)
+            <span class="tag">&lt;/th&gt;</span>
+            <span class="tag">&lt;th&gt;</span>
+                <span class="tag">@Html.DisplayNameFor</span>(model =&gt; model.Nombre)
+            <span class="tag">&lt;/th&gt;</span>
+            <span class="tag">&lt;th&gt;</span>
+                <span class="tag">@Html.DisplayNameFor</span>(model =&gt; model.Nacionalidad)
+            <span class="tag">&lt;/th&gt;</span>
+            <span class="tag">&lt;th&gt;&lt;/th&gt;</span>
+        <span class="tag">&lt;/tr&gt;</span>
+    <span class="tag">&lt;/thead&gt;</span>
+    <span class="tag">&lt;tbody&gt;</span>
+<span class="tag">@foreach</span> (var item in Model) {
+        <span class="tag">&lt;tr&gt;</span>
+            <span class="tag">&lt;td&gt;</span>
+                <span class="tag">@Html.DisplayFor</span>(modelItem =&gt; item.AutorId)
+            <span class="tag">&lt;/td&gt;</span>
+            <span class="tag">&lt;td&gt;</span>
+                <span class="tag">@Html.DisplayFor</span>(modelItem =&gt; item.Nombre)
+            <span class="tag">&lt;/td&gt;</span>
+            <span class="tag">&lt;td&gt;</span>
+                <span class="tag">@Html.DisplayFor</span>(modelItem =&gt; item.Nacionalidad)
+            <span class="tag">&lt;/td&gt;</span>
+            <span class="tag">&lt;td&gt;</span>
+                <span class="tag">@Html.ActionLink</span>(<span class="str">"Edit"</span>, <span class="str">"Edit"</span>, <span class="kwd">new</span> { <span class="cmt">/* id=item.PrimaryKey */</span> }) |
+                <span class="tag">@Html.ActionLink</span>(<span class="str">"Details"</span>, <span class="str">"Details"</span>, <span class="kwd">new</span> { <span class="cmt">/* id=item.PrimaryKey */</span> }) |
+                <span class="tag">@Html.ActionLink</span>(<span class="str">"Delete"</span>, <span class="str">"Delete"</span>, <span class="kwd">new</span> { <span class="cmt">/* id=item.PrimaryKey */</span> })
+            <span class="tag">&lt;/td&gt;</span>
+        <span class="tag">&lt;/tr&gt;</span>
+}
+    <span class="tag">&lt;/tbody&gt;</span>
+<span class="tag">&lt;/table&gt;</span></pre>
+
+  <div class="warn-box"><strong>Ojo:</strong> los enlaces Edit/Details/Delete apuntan a acciones que <strong>no existen</strong> en este cliente (solo hay <code>Index</code>). Son restos del scaffolding; si los presionas, recibir&aacute;s un 404. El profe los dej&oacute; as&iacute;.</div>
+
+  <h3 id="cliente-paso6">5.6. launchSettings.json y c&oacute;mo ejecutar el cliente</h3>
+
+  <p>El cliente corre en <code>http://localhost:5217</code> (y <code>https://localhost:7179</code>). Como no tiene Swagger, <code>launchBrowser</code> abre la portada (Home). Para ver los datos, navega a <code>/Autor</code>.</p>
+
+  <span class="code-label">Properties/launchSettings.json (cliente)</span>
+<pre>{
+  <span class="str">"iisSettings"</span>: {
+    <span class="str">"windowsAuthentication"</span>: <span class="kwd">false</span>,
+    <span class="str">"anonymousAuthentication"</span>: <span class="kwd">true</span>,
+    <span class="str">"iisExpress"</span>: {
+      <span class="str">"applicationUrl"</span>: <span class="str">"http://localhost:5159"</span>,
+      <span class="str">"sslPort"</span>: <span class="num">44324</span>
+    }
+  },
+  <span class="str">"profiles"</span>: {
+    <span class="str">"http"</span>: {
+      <span class="str">"commandName"</span>: <span class="str">"Project"</span>,
+      <span class="str">"dotnetRunMessages"</span>: <span class="kwd">true</span>,
+      <span class="str">"launchBrowser"</span>: <span class="kwd">true</span>,
+      <span class="str">"applicationUrl"</span>: <span class="str">"http://localhost:5217"</span>,
+      <span class="str">"environmentVariables"</span>: {
+        <span class="str">"ASPNETCORE_ENVIRONMENT"</span>: <span class="str">"Development"</span>
+      }
+    },
+    <span class="str">"https"</span>: {
+      <span class="str">"commandName"</span>: <span class="str">"Project"</span>,
+      <span class="str">"dotnetRunMessages"</span>: <span class="kwd">true</span>,
+      <span class="str">"launchBrowser"</span>: <span class="kwd">true</span>,
+      <span class="str">"applicationUrl"</span>: <span class="str">"https://localhost:7179;http://localhost:5217"</span>,
+      <span class="str">"environmentVariables"</span>: {
+        <span class="str">"ASPNETCORE_ENVIRONMENT"</span>: <span class="str">"Development"</span>
+      }
+    },
+    <span class="str">"IIS Express"</span>: {
+      <span class="str">"commandName"</span>: <span class="str">"IISExpress"</span>,
+      <span class="str">"launchBrowser"</span>: <span class="kwd">true</span>,
+      <span class="str">"environmentVariables"</span>: {
+        <span class="str">"ASPNETCORE_ENVIRONMENT"</span>: <span class="str">"Development"</span>
+      }
+    }
+  }
+}</pre>
+
+  <h3 id="cliente-paso7">5.7. C&oacute;mo se conectan los 2 proyectos y la prueba integrada</h3>
+
+  <p>Para que la p&aacute;gina del cliente muestre los autores, <strong>primero debe estar corriendo la API</strong> (en <code>https://localhost:7229</code>). El orden de ejecuci&oacute;n importa:</p>
+
+  <ol>
+    <li class="summary-step"><strong>Levantar la API</strong>: F5 en <code>WebApi\WebApplication1</code> (perfil <code>https</code>). Queda en <code>https://localhost:7229/swagger</code>.</li>
+    <li class="summary-step"><strong>Levantar el cliente</strong>: F5 en <code>ConsumoServicios\WebApplication1</code>. Abre <code>http://localhost:5217</code>.</li>
+    <li class="summary-step"><strong>Navegar a <code>http://localhost:5217/Autor</code></strong>: el controller hace <code>GET https://localhost:7229/api/Autor</code> y la vista pinta la tabla con los autores de <code>DB_BIBLIOTECA</code>.</li>
+  </ol>
+
+  <div class="postman">
+    <strong>Prueba integrada manual (equivalente en el navegador):</strong><br>
+    Con la API y el cliente corriendo, abro <code>http://localhost:5217/Autor</code> y verifico que la tabla muestre:<br>
+    <code>1</code> &mdash; Garc&iacute;a M&aacute;rquez &nbsp;|&nbsp; <code>2</code> &mdash; Vargas Llosa.
+  </div>
+
+  <div class="danger-box"><strong>Error t&iacute;pico de conexi&oacute;n:</strong> si el cliente sale con error <em>"The SSL connection could not be established"</em> o <em>certificate validation</em>, es el certificado de desarrollo. Soluci&oacute;n: ejecutar una vez <code>dotnet dev-certs https --trust</code>. Tambi&eacute;n verifica que la API est&eacute; corriendo y que <code>apiBase</code> coincida con el puerto HTTPS real de la API (regla del puerto).</div>
+</div>
+
+<!-- ============================================================ -->
+<div class="section-card" id="errores">
+  <h2>6. Errores reales que resolv&iacute; (para no volver a tropezar)</h2>
+
+  <p>Estos son los errores que me aparecieron durante la r&eacute;plica y c&oacute;mo los resolv&iacute;:</p>
+
+  <table>
+    <tr><th>#</th><th>S&iacute;ntoma</th><th>Causa</th><th>Soluci&oacute;n</th></tr>
+    <tr>
+      <td>1</td>
+      <td>Error de compilaci&oacute;n en la interfaz</td>
+      <td><code>delete(Libro libro)</code> en vez de <code>delete(int LibroId)</code></td>
+      <td>Cambiar la firma de <code>ILibroService</code> a <code>bool delete(int LibroId)</code> y el controller llama <code>_service.delete(LibroId)</code></td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>Error de compilaci&oacute;n: no encuentra la interfaz</td>
+      <td>El service no ten&iacute;a <code>public class AutorService : IAutorService</code> ni el <code>using WebApplication1.Interfaces;</code></td>
+      <td>Agregar la herencia <code>: IAutorService</code> y el <code>using</code></td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>Error de compilaci&oacute;n <code>CS0246</code> (System.Windows.Input)</td>
+      <td>Puse un <code>using System.Windows.Input;</code> que no existe en proyectos Web (es de WPF)</td>
+      <td>Eliminarlo; en Web uso <code>Microsoft.Data.SqlClient</code></td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>Swagger mostraba la ruta con un par&aacute;metro extra en el PUT</td>
+      <td>Us&eacute; <code>[HttpPut("{LibroId}")]</code> y el id iba en la URL</td>
+      <td>Cambiar a <code>[HttpPut]</code> sin segmento; el <code>libroId</code> va en el body</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td><strong>HTTP 500</strong> en <code>GET api/Libro/1</code>: <em>"Procedure expects parameter '@LibroId'"</em></td>
+      <td>En <code>getById</code> faltaba <code>command.Parameters.AddWithValue("@LibroId", LibroId);</code></td>
+      <td>Agregar el par&aacute;metro antes de <code>con.Open()</code></td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td><strong>HTTP 400</strong> en <code>POST api/Libro</code>: <em>"The Autor field is required"</em></td>
+      <td>La propiedad <code>Autor</code> es <code>string</code> no anulable y <code>[ApiController]</code> la valida como obligatoria</td>
+      <td>Incluir <code>"autor"</code> en el JSON del body (aunque el SP no lo use)</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>Al presionar F5 se abr&iacute;a el perfil equivocado</td>
+      <td>No hab&iacute;a perfil activo definido</td>
+      <td>En <code>WebApplication1.csproj.user</code> puse <code>&lt;ActiveDebugProfile&gt;https&lt;/ActiveDebugProfile&gt;</code></td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>Le puse <code>Microsoft.Data.SqlClient</code> al cliente MVC (de costumbre, porque la API lo usa)</td>
+      <td>El cliente <strong>no toca SQL Server</strong>: solo consume la API por HTTP con <code>HttpClient</code></td>
+      <td>Quitar el paquete del cliente; el <code>SqlClient</code> es <strong>exclusivo de la WebApi</strong>. En su lugar el cliente usa <code>Newtonsoft.Json</code></td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td>El cliente no ve&iacute;a los datos (tabla vac&iacute;a o error de conexi&oacute;n)</td>
+      <td>Faltaba levantar la API, o el <code>apiBase</code> no coincid&iacute;a con el puerto HTTPS de la API, o el certificado dev no era confiable</td>
+      <td>Levantar primero la API; <code>apiBase = "https://localhost:7229"</code> (regla del puerto); <code>dotnet dev-certs https --trust</code></td>
+    </tr>
+  </table>
+
+  <div class="warn-box"><strong>Regla de oro aprendida:</strong> cuando un <code>SqlCommand</code> ejecuta un SP que recibe par&aacute;metros, <strong>siempre</strong> hay que agregar <code>AddWithValue</code> por cada <code>@parametro</code> que el SP espere. Si falta uno, SQL Server lanza error y la API responde <code>500</code>.</div>
+
+  <div class="info-box"><strong>Recuerda:</strong> el orden de las columnas que lee <code>reader.GetInt32(0)</code>, <code>GetString(1)</code>, etc., es el orden del <code>SELECT</code> del SP. Si cambio el SP o la vista, debo verificar ese orden.</div>
+</div>
+
+<!-- ============================================================ -->
+<div class="section-card" id="resumen">
+  <h2>7. Resumen: orden completo de creaci&oacute;n y ejecuci&oacute;n</h2>
+
+  <p>Este es el orden que segu&iacute; (primero lo que no depende de nada, <strong>Program.cs al final</strong>):</p>
+
+  <h3>Proyecto 1: la API (WebApi\WebApplication1)</h3>
+  <ol>
+    <li class="summary-step"><strong>Crear el proyecto</strong>: <code>dotnet new webapi -n WebApplication1 -f net7.0</code></li>
+    <li class="summary-step"><strong>Paquetes NuGet (via VS):</strong> <code>Microsoft.Data.SqlClient</code> 5.2.0 (+ Swashbuckle que ya viene)</li>
+    <li class="summary-step"><strong>appsettings.json</strong> &rarr; cadena <code>conexion</code></li>
+    <li class="summary-step"><strong>Models</strong> (Autor, Libro, ApiResponse&lt;T&gt;) &rarr; no dependen de nadie</li>
+    <li class="summary-step"><strong>Interfaces</strong> (IAutorService, ILibroService) &rarr; dependen de Models</li>
+    <li class="summary-step"><strong>Services</strong> (AutorService, LibroService) &rarr; dependen de Models + Interfaces; usar <strong>Alt+Enter &rarr; Implementar interfaz</strong></li>
+    <li class="summary-step"><strong>Controllers</strong> (AutorController, LibroController) &rarr; dependen de Interfaces + Models</li>
+    <li class="summary-step"><strong>Program.cs</strong> &rarr; al final (usa Interfaces y Services en el <code>AddScoped</code>)</li>
+    <li class="summary-step"><strong>launchSettings.json</strong> &rarr; perfil <code>https</code> activo en <code>https://localhost:7229</code></li>
+    <li class="summary-step"><strong>Compilar</strong> (<code>dotnet build</code>) y <strong>ejecutar</strong> (F5 &rarr; Swagger en <code>https://localhost:7229/swagger</code>)</li>
+    <li class="summary-step"><strong>Probar los 6 endpoints</strong> en Swagger (y verificar en la base con <code>sqlcmd</code>)</li>
+  </ol>
+
+  <h3>Proyecto 2: el cliente (ConsumoServicios\WebApplication1)</h3>
+  <ol>
+    <li class="summary-step"><strong>Crear el proyecto</strong>: <code>dotnet new mvc -n WebApplication1 -f net7.0</code></li>
+    <li class="summary-step"><strong>Paquete NuGet (via VS):</strong> <code>Newtonsoft.Json</code> 13.0.1 (<strong>no</strong> SqlClient)</li>
+    <li class="summary-step"><strong>Program.cs</strong> &rarr; agregar <code>AddHttpClient()</code></li>
+    <li class="summary-step"><strong>Models</strong> (Autor, Libro, ApiResponse&lt;T&gt;) &rarr; copiados de la API</li>
+    <li class="summary-step"><strong>Controllers/AutorController.cs</strong> &rarr; <code>apiBase = "https://localhost:7229"</code></li>
+    <li class="summary-step"><strong>Views/Autor/Index.cshtml</strong> &rarr; tabla con <code>IEnumerable&lt;Autor&gt;</code></li>
+    <li class="summary-step"><strong>launchSettings.json</strong> &rarr; <code>http://localhost:5217</code></li>
+    <li class="summary-step"><strong>Ejecutar la prueba integrada</strong>: API en 7229 + cliente en <code>http://localhost:5217/Autor</code></li>
+  </ol>
+
+  <div class="flow-arrow">&#8681;</div>
+
+  <div class="info-box"><strong>Regla del puerto (una vez m&aacute;s):</strong> la API queda en <code>https://localhost:7229</code> y el cliente usa <code>apiBase = "https://localhost:7229"</code>. Si cambio el puerto HTTPS de la API, debo cambiar el <code>apiBase</code> del cliente.</div>
+</div>
+
+</div>
+</body>
+</html>
