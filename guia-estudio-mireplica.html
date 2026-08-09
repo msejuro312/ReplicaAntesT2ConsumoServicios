@@ -111,7 +111,9 @@
         <li><a href="#cliente-paso2">5.2. Program.cs (MVC + AddHttpClient)</a></li>
         <li><a href="#cliente-paso3">5.3. Models: Autor, Libro, ApiResponse&lt;T&gt;</a></li>
         <li><a href="#cliente-paso4">5.4. Controllers/AutorController.cs (el consumidor con HttpClient)</a></li>
+        <li><a href="#cliente-paso4b">5.4b. Controllers/LibroController.cs (el CRUD completo con HttpClient)</a></li>
         <li><a href="#cliente-paso5">5.5. La vista clave: Views/Autor/Index.cshtml</a></li>
+        <li><a href="#cliente-paso5b">5.5b. Las vistas de Libro (agregadas hoy): Index, Create y Edit</a></li>
         <li><a href="#cliente-paso6">5.6. launchSettings.json y c&oacute;mo ejecutar el cliente</a></li>
         <li><a href="#cliente-paso7">5.7. C&oacute;mo se conectan los 2 proyectos y la prueba integrada</a></li>
       </ol>
@@ -181,8 +183,8 @@
   </ul>
 
   <div class="danger-box"><strong>La cadena de conexi&oacute;n es un requisito de la BD:</strong> la API lee de <code>appsettings.json</code> esta cadena:
-    <code style="display:inline-block; background:#fecaca; color:#7f1d1d; padding:2px 8px; margin-top:6px;">server=.;database=DB_BIBLIOTECA;user=sa;password=sql;TrustServerCertificate=True;</code>
-    Significa: servidor local (<code>.</code>), base <code>DB_BIBLIOTECA</code>, usuario <code>sa</code> con password <code>sql</code>, y confiar en el certificado. <strong>Si mi SQL Server no tuviera ese password de <code>sa</code>, tendr&iacute;a que cambiarlo</strong>. Aqu&iacute; se deja tal cual.</div>
+    <code style="display:inline-block; background:#fecaca; color:#7f1d1d; padding:2px 8px; margin-top:6px;">Server=.;Database=DB_BIBLIOTECA;Integrated Security=True;TrustServerCertificate=True;</code>
+    En este PC us&oacute; <strong>autenticaci&oacute;n de Windows</strong> (<code>Integrated Security=True</code>, sin usuario ni password). La versi&oacute;n anterior con <code>user=sa;password=sql</code> qued&oacute; <strong>comentada</strong> con <code>//</code> en el archivo.</div>
 
   <div class="info-box"><strong>Certificado HTTPS de desarrollo:</strong> para que Swagger y el futuro cliente llamen a <code>https://localhost:7229</code> sin problemas, ejecuta una vez: <code>dotnet dev-certs https --trust</code>.</div>
 
@@ -261,7 +263,7 @@ dotnet new webapi -n WebApplication1 -f net7.0 -o WebApplication1</pre>
 
   <h3 id="api-paso2">4.2. appsettings.json (la cadena de conexi&oacute;n)</h3>
 
-  <p>Agrego la secci&oacute;n <code>ConnectionStrings</code> con la clave <code>conexion</code> (el nombre que leo despu&eacute;s en los Services).</p>
+  <p>Agrego la secci&oacute;n <code>ConnectionStrings</code> con la clave <code>conexion</code> (el nombre que leo despu&eacute;s en los Services) usando <strong>autenticaci&oacute;n de Windows</strong> y dejando la versi&oacute;n con <code>sa</code> <strong>comentada</strong>:</p>
 
   <span class="code-label">appsettings.json</span>
 <pre>{
@@ -273,11 +275,12 @@ dotnet new webapi -n WebApplication1 -f net7.0 -o WebApplication1</pre>
   },
   <span class="str">"AllowedHosts"</span>: <span class="str">"*"</span>,
   <span class="str">"ConnectionStrings"</span>: {
-    <span class="str">"conexion"</span>: <span class="str">"server=.;database=DB_BIBLIOTECA;user=sa;password=sql;TrustServerCertificate=True;"</span>
+    <span class="str">"conexion"</span>: <span class="str">"Server=.;Database=DB_BIBLIOTECA;Integrated Security=True;TrustServerCertificate=True;"</span>,
+    <span class="cmt">//"conexion"</span>: <span class="str">"server=.;database=DB_BIBLIOTECA;user=sa;password=sql;TrustServerCertificate=True;"</span>
   }
 }</pre>
 
-  <div class="danger-box"><strong>Ojo:</strong> la cadena contiene la contrase&ntilde;a de <code>sa</code> en texto plano. Es normal en este tipo de proyectos de curso, pero <strong>no subir credenciales reales</strong> a GitHub si fueran de producci&oacute;n.</div>
+  <div class="info-box"><strong>Comentarios en JSON:</strong> aunque el JSON puro no admite comentarios, el proveedor de configuraci&oacute;n de .NET usa <code>JsonCommentHandling.Skip</code> y los ignora, as&iacute; que la l&iacute;nea <code>//...</code> no rompe la lectura. <code>Integrated Security=True</code> hace que SQL Server use el usuario de Windows de la sesi&oacute;n actual.</div>
 
   <h3 id="api-paso3">4.3. Models: Autor, Libro, ApiResponse&lt;T&gt;</h3>
 
@@ -944,6 +947,7 @@ dotnet new mvc -n WebApplication1 -f net7.0 -o WebApplication1</pre>
   <table>
     <tr><th>Paquete</th><th>Versi&oacute;n</th><th>&iquest;Por qu&eacute;?</th></tr>
     <tr><td><code>Newtonsoft.Json</code></td><td><code>13.0.1</code></td><td>Deserializar el JSON que devuelve la API (<code>JsonConvert.DeserializeObject</code>)</td></tr>
+    <tr><td><code>Microsoft.VisualStudio.Web.CodeGeneration.Design</code></td><td><code>7.0.12</code></td><td>Lo agreg&oacute; el <strong>scaffolding</strong> de VS cuando gener&eacute; las vistas de <code>Libro</code> (Create/Edit). En el c&oacute;digo no se usa directo.</td></tr>
   </table>
 
   <div class="danger-box"><strong>Lecci&oacute;n aprendida: el cliente NO lleva <code>Microsoft.Data.SqlClient</code>.</strong> Primero se lo agregu&eacute; por costumbre (porque la API lo usa), pero el cliente <strong>nunca habla con SQL Server</strong> &mdash; solo consume la API por HTTP. Tenerlo no rompe nada, pero es innecesario y confunde el rol de cada proyecto. Lo quito. El <code>SqlClient</code> es <strong>exclusivo de la WebApi</strong>.</div>
@@ -962,6 +966,7 @@ dotnet new mvc -n WebApplication1 -f net7.0 -o WebApplication1</pre>
 
   <span class="tag">&lt;ItemGroup&gt;</span>
     <span class="tag">&lt;PackageReference</span> <span class="attr">Include</span>=<span class="str">"Newtonsoft.Json"</span> <span class="attr">Version</span>=<span class="str">"13.0.1"</span> <span class="tag">/&gt;</span>
+    <span class="tag">&lt;PackageReference</span> <span class="attr">Include</span>=<span class="str">"Microsoft.VisualStudio.Web.CodeGeneration.Design"</span> <span class="attr">Version</span>=<span class="str">"7.0.12"</span> <span class="tag">/&gt;</span>
   <span class="tag">&lt;/ItemGroup&gt;</span>
 
 <span class="tag">&lt;/Project&gt;</span></pre>
@@ -1029,9 +1034,11 @@ app.<span class="fn">Run</span>();</pre>
         <span class="kwd">public</span> <span class="cls">string</span> Titulo { <span class="kwd">get</span>; <span class="kwd">set</span>; }
         <span class="kwd">public</span> <span class="cls">string</span> ISBN { <span class="kwd">get</span>; <span class="kwd">set</span>; }
         <span class="kwd">public</span> <span class="cls">int</span> AnioPublicacion { <span class="kwd">get</span>; <span class="kwd">set</span>; }
-        <span class="kwd">public</span> <span class="cls">string</span> Autor { <span class="kwd">get</span>; <span class="kwd">set</span>; }
+        <span class="kwd">public</span> <span class="cls">string</span> Autor { <span class="kwd">get</span>; <span class="kwd">set</span>; } = <span class="cls">string</span>.<span class="fn">Empty</span> <span class="cmt">// inicializado para evitar el warning nullable</span>
     }
 }</pre>
+
+  <div class="info-box"><strong>Cambio de hoy en el cliente:</strong> en <code>Libro.cs</code> el <code>Autor</code> qued&oacute; inicializado con <code>= string.Empty;</code> para suprimir el warning CS8618 (propiedad no anulable sin valor inicial).</div>
 
   <span class="code-label">Models/ApiResponse.cs (cliente)</span>
 <pre><span class="kwd">namespace</span> WebApplication1.Models
@@ -1077,6 +1084,144 @@ app.<span class="fn">Run</span>();</pre>
 }</pre>
 
   <div class="info-box"><strong>Paso a paso del consumo:</strong> (1) <code>BaseAddress</code> apunta a la API; (2) <code>GetAsync("api/Autor")</code> hace la llamada HTTP a <code>https://localhost:7229/api/Autor</code>; (3) <code>ReadAsStringAsync</code> lee el body como texto (JSON); (4) <code>JsonConvert.DeserializeObject&lt;List&lt;Autor&gt;&gt;</code> convierte el JSON en una lista de objetos; (5) <code>View(lista)</code> pasa esa lista a la vista.</div>
+
+  <h3 id="cliente-paso4b">5.4b. Controllers/LibroController.cs (el CRUD completo con HttpClient)</h3>
+
+  <p><strong>Agregado hoy (08/08):</strong> es el mismo patr&oacute;n de <code>AutorController</code>, pero ahora el cliente <strong>tambi&eacute;n puede crear y editar libros</strong>. Usa <strong>helpers privados</strong> (<code>listLibros</code>, <code>getLibro</code>, <code>listAutores</code>, <code>insertar</code>, <code>actualizar</code>) para no repetir el c&oacute;digo HTTP, un <code>SelectList</code> de autores para los formularios y <code>TempData["message"]</code> para mostrar el mensaje de la API despu&eacute;s del redirect.</p>
+
+  <span class="code-label">Controllers/LibroController.cs (cliente)</span>
+<pre><span class="kwd">using</span> Microsoft.AspNetCore.Mvc;
+<span class="kwd">using</span> Microsoft.AspNetCore.Mvc.Rendering;
+<span class="kwd">using</span> Newtonsoft.Json;
+<span class="kwd">using</span> System.Text;
+<span class="kwd">using</span> WebApplication1.Models;
+
+<span class="kwd">namespace</span> WebApplication1.Controllers
+{
+    <span class="kwd">public</span> <span class="kwd">class</span> <span class="cls">LibroController</span> : <span class="cls">Controller</span>
+    {
+        <span class="kwd">private readonly</span> <span class="cls">HttpClient</span> _httpClient;
+        <span class="kwd">private readonly string</span> apiBase = <span class="str">"https://localhost:7229"</span>;
+        <span class="kwd">public</span> <span class="fn">LibroController</span>(<span class="cls">HttpClient</span> httpClient
+            ) {
+            _httpClient = httpClient;
+            _httpClient.BaseAddress = <span class="kwd">new</span> <span class="cls">Uri</span>(apiBase);
+
+
+        }
+
+        <span class="cls">Task</span>&lt;<span class="cls">List</span>&lt;<span class="cls">Libro</span>&gt;&gt; <span class="fn">listLibros</span>()
+        {
+            <span class="kwd">var</span> response = <span class="kwd">await</span> _httpClient.<span class="fn">GetAsync</span>(<span class="str">"api/Libro"</span>);
+            <span class="kwd">var</span> content = <span class="kwd">await</span> response.Content.<span class="fn">ReadAsStringAsync</span>();
+            <span class="kwd">var</span> lista = <span class="cls">JsonConvert</span>.<span class="fn">DeserializeObject</span>&lt;<span class="cls">List</span>&lt;<span class="cls">Libro</span>&gt;&gt;(content) ?? <span class="kwd">new</span> <span class="cls">List</span>&lt;<span class="cls">Libro</span>&gt;();
+            <span class="kwd">return</span> <span class="kwd">await</span> <span class="cls">Task</span>.<span class="fn">Run</span>(() =&gt; lista);
+        }
+
+        <span class="cls">Task</span>&lt;<span class="cls">Libro</span>&gt; <span class="fn">getLibro</span>(<span class="cls">int</span> LibroId)
+        {
+            <span class="kwd">var</span> response = <span class="kwd">await</span> _httpClient.<span class="fn">GetAsync</span>(<span class="str">"api/Libro/"</span> + LibroId);
+            <span class="kwd">var</span> content = <span class="kwd">await</span> response.Content.<span class="fn">ReadAsStringAsync</span>();
+            <span class="kwd">var</span> apiResponse = <span class="cls">JsonConvert</span>.<span class="fn">DeserializeObject</span>&lt;<span class="cls">ApiResponse</span>&lt;<span class="cls">Libro</span>&gt;&gt;(content) ?? <span class="kwd">new</span> <span class="cls">ApiResponse</span>&lt;<span class="cls">Libro</span>&gt;();
+            <span class="kwd">var</span> libro = apiResponse.data;
+            <span class="kwd">return</span> <span class="kwd">await</span> <span class="cls">Task</span>.<span class="fn">Run</span>(() =&gt; libro);
+        }
+
+        <span class="cls">Task</span>&lt;<span class="cls">List</span>&lt;<span class="cls">Autor</span>&gt;&gt; <span class="fn">listAutores</span>()
+        {
+            <span class="kwd">var</span> response = <span class="kwd">await</span> _httpClient.<span class="fn">GetAsync</span>(<span class="str">"api/Autor"</span>);
+            <span class="kwd">var</span> content = <span class="kwd">await</span> response.Content.<span class="fn">ReadAsStringAsync</span>();
+            <span class="kwd">var</span> lista = <span class="cls">JsonConvert</span>.<span class="fn">DeserializeObject</span>&lt;<span class="cls">List</span>&lt;<span class="cls">Autor</span>&gt;&gt;(content) ?? <span class="kwd">new</span> <span class="cls">List</span>&lt;<span class="cls">Autor</span>&gt;();
+            <span class="kwd">return</span> <span class="kwd">await</span> <span class="cls">Task</span>.<span class="fn">Run</span>(() =&gt; lista);
+        }
+
+        <span class="cls">Task</span>&lt;<span class="cls">string</span>&gt; <span class="fn">insertar</span>(<span class="cls">Libro</span> libro)
+        {
+            <span class="kwd">var</span> json = <span class="cls">JsonConvert</span>.<span class="fn">SerializeObject</span>(libro);
+            <span class="kwd">var</span> body = <span class="kwd">new</span> <span class="cls">StringContent</span>(json, <span class="cls">Encoding</span>.<span class="fn">UTF8</span>, <span class="str">"application/json"</span>);
+            <span class="kwd">var</span> request = <span class="kwd">await</span> _httpClient.<span class="fn">PostAsync</span>(<span class="str">"api/Libro"</span>, body);
+            <span class="kwd">var</span> response = <span class="kwd">await</span> request.Content.<span class="fn">ReadAsStringAsync</span>();
+            <span class="kwd">var</span> apiResponse = <span class="cls">JsonConvert</span>.<span class="fn">DeserializeObject</span>&lt;<span class="cls">ApiResponse</span>&lt;<span class="cls">object</span>&gt;&gt;(response) ?? <span class="kwd">new</span> <span class="cls">ApiResponse</span>&lt;<span class="cls">object</span>&gt;();
+            <span class="kwd">var</span> message = apiResponse.message;
+            <span class="kwd">return</span> <span class="kwd">await</span> <span class="cls">Task</span>.<span class="fn">Run</span>(() =&gt; message);
+        }
+
+        <span class="cls">Task</span>&lt;<span class="cls">string</span>&gt; <span class="fn">actualizar</span>(<span class="cls">Libro</span> libro)
+        {
+            <span class="kwd">var</span> json = <span class="cls">JsonConvert</span>.<span class="fn">SerializeObject</span>(libro);
+            <span class="kwd">var</span> body = <span class="kwd">new</span> <span class="cls">StringContent</span>(json, <span class="cls">Encoding</span>.<span class="fn">UTF8</span>, <span class="str">"application/json"</span>);
+            <span class="kwd">var</span> request = <span class="kwd">await</span> _httpClient.<span class="fn">PutAsync</span>(<span class="str">"api/Libro"</span>, body);
+            <span class="kwd">var</span> response = <span class="kwd">await</span> request.Content.<span class="fn">ReadAsStringAsync</span>();
+            <span class="kwd">var</span> apiResponse = <span class="cls">JsonConvert</span>.<span class="fn">DeserializeObject</span>&lt;<span class="cls">ApiResponse</span>&lt;<span class="cls">object</span>&gt;&gt;(response) ?? <span class="kwd">new</span> <span class="cls">ApiResponse</span>&lt;<span class="cls">object</span>&gt;();
+            <span class="kwd">var</span> message = apiResponse.message;
+            <span class="kwd">return</span> <span class="kwd">await</span> <span class="cls">Task</span>.<span class="fn">Run</span>(() =&gt; message);
+        }
+
+        <span class="ann">[HttpGet]</span>
+
+        <span class="kwd">public async</span> <span class="cls">Task</span>&lt;<span class="cls">IActionResult</span>&gt; <span class="fn">Index</span>()
+        {
+            <span class="kwd">var</span> lista = <span class="kwd">await</span> <span class="fn">listLibros</span>();
+            <span class="kwd">return</span> <span class="fn">View</span>(lista);
+        }
+
+        <span class="ann">[HttpGet]</span>
+
+        <span class="kwd">public async</span> <span class="cls">Task</span>&lt;<span class="cls">IActionResult</span>&gt; <span class="fn">Create</span>()
+        {
+            <span class="kwd">var</span> autores = <span class="kwd">await</span> <span class="fn">listAutores</span>();
+            <span class="cls">ViewBag</span>.autores = <span class="kwd">new</span> <span class="cls">SelectList</span>(autores, <span class="str">"AutorId"</span>, <span class="str">"Nombre"</span>);
+            <span class="kwd">return</span> <span class="fn">View</span>(<span class="kwd">new</span> <span class="cls">Libro</span>());
+
+        }
+
+        <span class="ann">[HttpPost]</span>
+
+        <span class="kwd">public async</span> <span class="cls">Task</span>&lt;<span class="cls">IActionResult</span>&gt; <span class="fn">Create</span>(<span class="cls">Libro</span> libro)
+        {
+            <span class="kwd">var</span> message = <span class="kwd">await</span> <span class="fn">insertar</span>(libro);
+            <span class="cls">TempData</span>[<span class="str">"message"</span>] = message;
+            <span class="kwd">return</span> <span class="fn">RedirectToAction</span>(<span class="str">"Index"</span>);
+        }
+
+        <span class="ann">[HttpGet]</span>
+
+        <span class="kwd">public async</span> <span class="cls">Task</span>&lt;<span class="cls">IActionResult</span>&gt; <span class="fn">Edit</span>(<span class="cls">int</span> LibroId)
+        {
+            <span class="kwd">var</span> libro = <span class="kwd">await</span> <span class="fn">getLibro</span>(LibroId);
+            <span class="kwd">if</span> (libro == <span class="kwd">null</span>)
+            {
+                <span class="cls">TempData</span>[<span class="str">"message"</span>] = <span class="str">"El libro a editar no existe!"</span>;
+                <span class="kwd">return</span> <span class="fn">RedirectToAction</span>(<span class="str">"Index"</span>);
+
+
+            }
+            <span class="kwd">else</span> {
+                <span class="kwd">var</span> autores = <span class="kwd">await</span> <span class="fn">listAutores</span>();
+                <span class="cls">ViewBag</span>.autores = <span class="kwd">new</span> <span class="cls">SelectList</span>(autores, <span class="str">"AutorId"</span>, <span class="str">"Nombre"</span>, libro.AutorId);
+                <span class="kwd">return</span> <span class="fn">View</span>(libro);
+
+            }
+        }
+
+        <span class="ann">[HttpPost]</span>
+
+        <span class="kwd">public async</span> <span class="cls">Task</span>&lt;<span class="cls">IActionResult</span>&gt; <span class="fn">Edit</span>(<span class="cls">Libro</span> libro)
+        { 
+            <span class="kwd">var</span> message = <span class="kwd">await</span> <span class="fn">actualizar</span>(libro);
+            <span class="cls">TempData</span>[<span class="str">"message"</span>] = message;
+            <span class="kwd">return</span> <span class="fn">RedirectToAction</span>(<span class="str">"Index"</span>);
+        }
+    }
+}</pre>
+
+  <div class="info-box"><strong>Claves de este controller:</strong>
+    <ul>
+      <li><strong><code>SelectList(autores, "AutorId", "Nombre")</code></strong> llena el <code>&lt;select&gt;</code> de la vista con los autores tra&iacute;dos de <code>api/Autor</code> (en <code>Edit</code> pasa un 4&ordm; par&aacute;metro: el <code>AutorId</code> seleccionado).</li>
+      <li><strong><code>TempData["message"]</code></strong> guarda el mensaje que devuelve la API (<code>message</code>) y la vista <code>Index.cshtml</code> lo muestra con <code>@TempData["message"]</code>.</li>
+      <li><strong>Solo tiene <code>Index</code>, <code>Create</code> y <code>Edit</code>.</strong> No hay <code>Delete</code> ni <code>Details</code>: los enlaces de la vista a <code>Details</code>/<code>Delete</code> fallan (404) y el <code>Delete</code> del libro no est&aacute; implementado en el cliente.</li>
+    </ul>
+  </div>
 
   <h3 id="cliente-paso5">5.5. La vista clave: Views/Autor/Index.cshtml</h3>
 
@@ -1133,6 +1278,192 @@ app.<span class="fn">Run</span>();</pre>
 
   <div class="warn-box"><strong>Ojo:</strong> los enlaces Edit/Details/Delete apuntan a acciones que <strong>no existen</strong> en este cliente (solo hay <code>Index</code>). Son restos del scaffolding; si los presionas, recibir&aacute;s un 404. El profe los dej&oacute; as&iacute;.</div>
 
+  <h3 id="cliente-paso5b">5.5b. Las vistas de Libro (agregadas hoy): Index, Create y Edit</h3>
+
+  <p>Las gener&eacute; con el <strong>scaffolding de Visual Studio</strong> (clic derecho en Views &rarr; Add &rarr; New Scaffolded Item &rarr; MVC View con modelo <code>Libro</code>), lo que explica el paquete <code>CodeGeneration.Design</code> en el csproj. La clave: <code>Index</code> muestra <code>@TempData["message"]</code> arriba y los formularios usan <code>asp-items="@ViewBag.autores"</code> para el <code>SelectList</code> de autores.</p>
+
+  <span class="code-label">Views/Libro/Index.cshtml (cliente)</span>
+<pre><span class="tag">@model</span> IEnumerable&lt;WebApplication1.Models.Libro&gt;
+
+<span class="tag">@{</span>
+    ViewData[<span class="str">"Title"</span>] = <span class="str">"Index"</span>;
+<span class="tag">}</span>
+
+<span class="tag">&lt;h1&gt;</span>Index<span class="tag">&lt;/h1&gt;</span>
+<span class="tag">&lt;p&gt;</span>
+    <span class="tag">@TempData</span>[<span class="str">"message"</span>]
+<span class="tag">&lt;/p&gt;</span>
+
+<span class="tag">&lt;p&gt;</span>
+    <span class="tag">&lt;a</span> <span class="attr">asp-action</span>=<span class="str">"Create"</span><span class="tag">&gt;</span>Create New<span class="tag">&lt;/a&gt;</span>
+<span class="tag">&lt;/p&gt;</span>
+<span class="tag">&lt;table</span> <span class="attr">class</span>=<span class="str">"table"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;thead&gt;</span>
+        <span class="tag">&lt;tr&gt;</span>
+            <span class="tag">&lt;th&gt;</span>
+                <span class="tag">@Html.DisplayNameFor</span>(model =&gt; model.LibroId)
+            <span class="tag">&lt;/th&gt;</span>
+            <span class="tag">&lt;th&gt;</span>
+                <span class="tag">@Html.DisplayNameFor</span>(model =&gt; model.AutorId)
+            <span class="tag">&lt;/th&gt;</span>
+            <span class="tag">&lt;th&gt;</span>
+                <span class="tag">@Html.DisplayNameFor</span>(model =&gt; model.Titulo)
+            <span class="tag">&lt;/th&gt;</span>
+            <span class="tag">&lt;th&gt;</span>
+                <span class="tag">@Html.DisplayNameFor</span>(model =&gt; model.ISBN)
+            <span class="tag">&lt;/th&gt;</span>
+            <span class="tag">&lt;th&gt;</span>
+                <span class="tag">@Html.DisplayNameFor</span>(model =&gt; model.AnioPublicacion)
+            <span class="tag">&lt;/th&gt;</span>
+            <span class="tag">&lt;th&gt;</span>
+                <span class="tag">@Html.DisplayNameFor</span>(model =&gt; model.Autor)
+            <span class="tag">&lt;/th&gt;</span>
+            <span class="tag">&lt;th&gt;&lt;/th&gt;</span>
+        <span class="tag">&lt;/tr&gt;</span>
+    <span class="tag">&lt;/thead&gt;</span>
+    <span class="tag">&lt;tbody&gt;</span>
+<span class="tag">@foreach</span> (var item in Model) {
+        <span class="tag">&lt;tr&gt;</span>
+            <span class="tag">&lt;td&gt;</span>
+                <span class="tag">@Html.DisplayFor</span>(modelItem =&gt; item.LibroId)
+            <span class="tag">&lt;/td&gt;</span>
+            <span class="tag">&lt;td&gt;</span>
+                <span class="tag">@Html.DisplayFor</span>(modelItem =&gt; item.AutorId)
+            <span class="tag">&lt;/td&gt;</span>
+            <span class="tag">&lt;td&gt;</span>
+                <span class="tag">@Html.DisplayFor</span>(modelItem =&gt; item.Titulo)
+            <span class="tag">&lt;/td&gt;</span>
+            <span class="tag">&lt;td&gt;</span>
+                <span class="tag">@Html.DisplayFor</span>(modelItem =&gt; item.ISBN)
+            <span class="tag">&lt;/td&gt;</span>
+            <span class="tag">&lt;td&gt;</span>
+                <span class="tag">@Html.DisplayFor</span>(modelItem =&gt; item.AnioPublicacion)
+            <span class="tag">&lt;/td&gt;</span>
+            <span class="tag">&lt;td&gt;</span>
+                <span class="tag">@Html.DisplayFor</span>(modelItem =&gt; item.Autor)
+            <span class="tag">&lt;/td&gt;</span>
+            <span class="tag">&lt;td&gt;</span>
+                <span class="tag">@Html.ActionLink</span>(<span class="str">"Edit"</span>, <span class="str">"Edit"</span>, <span class="kwd">new</span> { <span class="cls">LibroId</span> = item.LibroId }) |
+                <span class="tag">@Html.ActionLink</span>(<span class="str">"Details"</span>, <span class="str">"Details"</span>, <span class="kwd">new</span> { <span class="cmt">/* id=item.PrimaryKey */</span> }) |
+                <span class="tag">@Html.ActionLink</span>(<span class="str">"Delete"</span>, <span class="str">"Delete"</span>, <span class="kwd">new</span> { <span class="cmt">/* id=item.PrimaryKey */</span> })
+            <span class="tag">&lt;/td&gt;</span>
+        <span class="tag">&lt;/tr&gt;</span>
+}
+    <span class="tag">&lt;/tbody&gt;</span>
+<span class="tag">&lt;/table&gt;</span></pre>
+
+  <span class="code-label">Views/Libro/Create.cshtml (cliente)</span>
+<pre><span class="tag">@model</span> WebApplication1.Models.Libro
+
+<span class="tag">@{</span>
+    ViewData[<span class="str">"Title"</span>] = <span class="str">"Create"</span>;
+<span class="tag">}</span>
+
+<span class="tag">&lt;h1&gt;</span>Create<span class="tag">&lt;/h1&gt;</span>
+
+<span class="tag">&lt;h4&gt;</span>Libro<span class="tag">&lt;/h4&gt;</span>
+<span class="tag">&lt;hr /&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"row"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"col-md-4"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;form</span> <span class="attr">asp-action</span>=<span class="str">"Create"</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;div</span> <span class="attr">asp-validation-summary</span>=<span class="str">"ModelOnly"</span> <span class="attr">class</span>=<span class="str">"text-danger"</span><span class="tag">&gt;&lt;/div&gt;</span>
+            <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"form-group"</span><span class="tag">&gt;</span>
+                <span class="tag">&lt;label</span> <span class="attr">asp-for</span>=<span class="str">"LibroId"</span> <span class="attr">class</span>=<span class="str">"control-label"</span><span class="tag">&gt;&lt;/label&gt;</span>
+                <span class="tag">&lt;input</span> <span class="attr">asp-for</span>=<span class="str">"LibroId"</span> <span class="attr">class</span>=<span class="str">"form-control"</span> <span class="tag">/&gt;</span>
+                <span class="tag">&lt;span</span> <span class="attr">asp-validation-for</span>=<span class="str">"LibroId"</span> <span class="attr">class</span>=<span class="str">"text-danger"</span><span class="tag">&gt;&lt;/span&gt;</span>
+            <span class="tag">&lt;/div&gt;</span>
+            <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"form-group"</span><span class="tag">&gt;</span>
+                <span class="tag">&lt;label</span> <span class="attr">asp-for</span>=<span class="str">"AutorId"</span> <span class="attr">class</span>=<span class="str">"control-label"</span><span class="tag">&gt;&lt;/label&gt;</span>
+                <span class="tag">&lt;select</span> <span class="attr">asp-items</span>=<span class="str">"@ViewBag.autores"</span> <span class="attr">asp-for</span>=<span class="str">"AutorId"</span> <span class="attr">class</span>=<span class="str">"form-select"</span><span class="tag">&gt;&lt;/select&gt;</span>
+            <span class="tag">&lt;/div&gt;</span>
+            <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"form-group"</span><span class="tag">&gt;</span>
+                <span class="tag">&lt;label</span> <span class="attr">asp-for</span>=<span class="str">"Titulo"</span> <span class="attr">class</span>=<span class="str">"control-label"</span><span class="tag">&gt;&lt;/label&gt;</span>
+                <span class="tag">&lt;input</span> <span class="attr">asp-for</span>=<span class="str">"Titulo"</span> <span class="attr">class</span>=<span class="str">"form-control"</span> <span class="tag">/&gt;</span>
+                <span class="tag">&lt;span</span> <span class="attr">asp-validation-for</span>=<span class="str">"Titulo"</span> <span class="attr">class</span>=<span class="str">"text-danger"</span><span class="tag">&gt;&lt;/span&gt;</span>
+            <span class="tag">&lt;/div&gt;</span>
+            <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"form-group"</span><span class="tag">&gt;</span>
+                <span class="tag">&lt;label</span> <span class="attr">asp-for</span>=<span class="str">"ISBN"</span> <span class="attr">class</span>=<span class="str">"control-label"</span><span class="tag">&gt;&lt;/label&gt;</span>
+                <span class="tag">&lt;input</span> <span class="attr">asp-for</span>=<span class="str">"ISBN"</span> <span class="attr">class</span>=<span class="str">"form-control"</span> <span class="tag">/&gt;</span>
+                <span class="tag">&lt;span</span> <span class="attr">asp-validation-for</span>=<span class="str">"ISBN"</span> <span class="attr">class</span>=<span class="str">"text-danger"</span><span class="tag">&gt;&lt;/span&gt;</span>
+            <span class="tag">&lt;/div&gt;</span>
+            <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"form-group"</span><span class="tag">&gt;</span>
+                <span class="tag">&lt;label</span> <span class="attr">asp-for</span>=<span class="str">"AnioPublicacion"</span> <span class="attr">class</span>=<span class="str">"control-label"</span><span class="tag">&gt;&lt;/label&gt;</span>
+                <span class="tag">&lt;input</span> <span class="attr">asp-for</span>=<span class="str">"AnioPublicacion"</span> <span class="attr">class</span>=<span class="str">"form-control"</span> <span class="tag">/&gt;</span>
+                <span class="tag">&lt;span</span> <span class="attr">asp-validation-for</span>=<span class="str">"AnioPublicacion"</span> <span class="attr">class</span>=<span class="str">"text-danger"</span><span class="tag">&gt;&lt;/span&gt;</span>
+            <span class="tag">&lt;/div&gt;</span>
+            <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"form-group"</span><span class="tag">&gt;</span>
+                <span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="str">"submit"</span> <span class="attr">value</span>=<span class="str">"Create"</span> <span class="attr">class</span>=<span class="str">"btn btn-primary"</span> <span class="tag">/&gt;</span>
+            <span class="tag">&lt;/div&gt;</span>
+        <span class="tag">&lt;/form&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/div&gt;</span>
+
+<span class="tag">&lt;div&gt;</span>
+    <span class="tag">&lt;a</span> <span class="attr">asp-action</span>=<span class="str">"Index"</span><span class="tag">&gt;</span>Back to List<span class="tag">&lt;/a&gt;</span>
+<span class="tag">&lt;/div&gt;</span>
+
+<span class="tag">@section</span> Scripts {
+    <span class="tag">@{</span>await <span class="cls">Html</span>.<span class="fn">RenderPartialAsync</span>(<span class="str">"_ValidationScriptsPartial"</span>);<span class="tag">}</span>
+}</pre>
+
+  <div class="info-box"><strong>Nota del modelo <code>Libro</code> en Create:</strong> la vista no edita el campo <code>Autor</code> (solo <code>LibroId</code>, <code>AutorId</code>, <code>Titulo</code>, <code>ISBN</code>, <code>AnioPublicacion</code>). Como la propiedad <code>Autor</code> es no anulable, al serializar el objeto con <code>JsonConvert.SerializeObject</code> el JSON de la API incluir&aacute; <code>"autor": null</code>, lo que puede provocar el 400 de validaci&oacute;n <code>[ApiController]</code> (misma regla de la secci&oacute;n <a href="#api-paso3">4.3</a>) si la pr&aacute;ctica vuelve a fallar.</div>
+
+  <span class="code-label">Views/Libro/Edit.cshtml (cliente)</span>
+<pre><span class="tag">@model</span> WebApplication1.Models.Libro
+
+<span class="tag">@{</span>
+    ViewData[<span class="str">"Title"</span>] = <span class="str">"Edit"</span>;
+<span class="tag">}</span>
+
+<span class="tag">&lt;h1&gt;</span>Edit<span class="tag">&lt;/h1&gt;</span>
+
+<span class="tag">&lt;h4&gt;</span>Libro<span class="tag">&lt;/h4&gt;</span>
+<span class="tag">&lt;hr /&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"row"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"col-md-4"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;form</span> <span class="attr">asp-action</span>=<span class="str">"Edit"</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;div</span> <span class="attr">asp-validation-summary</span>=<span class="str">"ModelOnly"</span> <span class="attr">class</span>=<span class="str">"text-danger"</span><span class="tag">&gt;&lt;/div&gt;</span>
+            <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"form-group"</span><span class="tag">&gt;</span>
+                <span class="tag">&lt;label</span> <span class="attr">asp-for</span>=<span class="str">"LibroId"</span> <span class="attr">class</span>=<span class="str">"control-label"</span><span class="tag">&gt;&lt;/label&gt;</span>
+                <span class="tag">&lt;input</span> <span class="attr">asp-for</span>=<span class="str">"LibroId"</span> <span class="attr">class</span>=<span class="str">"form-control"</span> <span class="tag">/&gt;</span>
+                <span class="tag">&lt;span</span> <span class="attr">asp-validation-for</span>=<span class="str">"LibroId"</span> <span class="attr">class</span>=<span class="str">"text-danger"</span><span class="tag">&gt;&lt;/span&gt;</span>
+            <span class="tag">&lt;/div&gt;</span>
+            <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"form-group"</span><span class="tag">&gt;</span>
+                <span class="tag">&lt;label</span> <span class="attr">asp-for</span>=<span class="str">"AutorId"</span> <span class="attr">class</span>=<span class="str">"control-label"</span><span class="tag">&gt;&lt;/label&gt;</span>
+                <span class="tag">&lt;select</span> <span class="attr">asp-items</span>=<span class="str">"@ViewBag.autores"</span> <span class="attr">asp-for</span>=<span class="str">"AutorId"</span> <span class="attr">class</span>=<span class="str">"form-select"</span><span class="tag">&gt;&lt;/select&gt;</span>
+            <span class="tag">&lt;/div&gt;</span>
+            <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"form-group"</span><span class="tag">&gt;</span>
+                <span class="tag">&lt;label</span> <span class="attr">asp-for</span>=<span class="str">"Titulo"</span> <span class="attr">class</span>=<span class="str">"control-label"</span><span class="tag">&gt;&lt;/label&gt;</span>
+                <span class="tag">&lt;input</span> <span class="attr">asp-for</span>=<span class="str">"Titulo"</span> <span class="attr">class</span>=<span class="str">"form-control"</span> <span class="tag">/&gt;</span>
+                <span class="tag">&lt;span</span> <span class="attr">asp-validation-for</span>=<span class="str">"Titulo"</span> <span class="attr">class</span>=<span class="str">"text-danger"</span><span class="tag">&gt;&lt;/span&gt;</span>
+            <span class="tag">&lt;/div&gt;</span>
+            <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"form-group"</span><span class="tag">&gt;</span>
+                <span class="tag">&lt;label</span> <span class="attr">asp-for</span>=<span class="str">"ISBN"</span> <span class="attr">class</span>=<span class="str">"control-label"</span><span class="tag">&gt;&lt;/label&gt;</span>
+                <span class="tag">&lt;input</span> <span class="attr">asp-for</span>=<span class="str">"ISBN"</span> <span class="attr">class</span>=<span class="str">"form-control"</span> <span class="tag">/&gt;</span>
+                <span class="tag">&lt;span</span> <span class="attr">asp-validation-for</span>=<span class="str">"ISBN"</span> <span class="attr">class</span>=<span class="str">"text-danger"</span><span class="tag">&gt;&lt;/span&gt;</span>
+            <span class="tag">&lt;/div&gt;</span>
+            <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"form-group"</span><span class="tag">&gt;</span>
+                <span class="tag">&lt;label</span> <span class="attr">asp-for</span>=<span class="str">"AnioPublicacion"</span> <span class="attr">class</span>=<span class="str">"control-label"</span><span class="tag">&gt;&lt;/label&gt;</span>
+                <span class="tag">&lt;input</span> <span class="attr">asp-for</span>=<span class="str">"AnioPublicacion"</span> <span class="attr">class</span>=<span class="str">"form-control"</span> <span class="tag">/&gt;</span>
+                <span class="tag">&lt;span</span> <span class="attr">asp-validation-for</span>=<span class="str">"AnioPublicacion"</span> <span class="attr">class</span>=<span class="str">"text-danger"</span><span class="tag">&gt;&lt;/span&gt;</span>
+            <span class="tag">&lt;/div&gt;</span>
+            <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"form-group"</span><span class="tag">&gt;</span>
+                <span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="str">"submit"</span> <span class="attr">value</span>=<span class="str">"Save"</span> <span class="attr">class</span>=<span class="str">"btn btn-primary"</span> <span class="tag">/&gt;</span>
+            <span class="tag">&lt;/div&gt;</span>
+        <span class="tag">&lt;/form&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/div&gt;</span>
+
+<span class="tag">&lt;div&gt;</span>
+    <span class="tag">&lt;a</span> <span class="attr">asp-action</span>=<span class="str">"Index"</span><span class="tag">&gt;</span>Back to List<span class="tag">&lt;/a&gt;</span>
+<span class="tag">&lt;/div&gt;</span>
+
+<span class="tag">@section</span> Scripts {
+    <span class="tag">@{</span>await <span class="cls">Html</span>.<span class="fn">RenderPartialAsync</span>(<span class="str">"_ValidationScriptsPartial"</span>);<span class="tag">}</span>
+}</pre>
+
+  <div class="warn-box"><strong>Ojo con las vistas de Libro:</strong> el enlace <code>Edit</code> de la tabla del Index s&iacute; funciona (apunta a <code>Edit</code>), pero <code>Details</code> y <code>Delete</code> <strong>no est&aacute;n implementados</strong> en <code>LibroController</code> (te dan 404). Adem&aacute;s, el <code>Edit</code> de la tabla enlaza sin pasar el <code>LibroId</code> (resto del scaffolding); si fallara, el controller usa la ruta <code>api/Libro/{id}</code>. El <code>POST Edit</code> s&iacute; llega con el <code>LibroId</code> porque la vista lo incluye como input visible.</div>
+
   <h3 id="cliente-paso6">5.6. launchSettings.json y c&oacute;mo ejecutar el cliente</h3>
 
   <p>El cliente corre en <code>http://localhost:5217</code> (y <code>https://localhost:7179</code>). Como no tiene Swagger, <code>launchBrowser</code> abre la portada (Home). Para ver los datos, navega a <code>/Autor</code>.</p>
@@ -1178,18 +1509,20 @@ app.<span class="fn">Run</span>();</pre>
 
   <h3 id="cliente-paso7">5.7. C&oacute;mo se conectan los 2 proyectos y la prueba integrada</h3>
 
-  <p>Para que la p&aacute;gina del cliente muestre los autores, <strong>primero debe estar corriendo la API</strong> (en <code>https://localhost:7229</code>). El orden de ejecuci&oacute;n importa:</p>
+  <p>Para que la p&aacute;gina del cliente muestre los autores y libros, <strong>primero debe estar corriendo la API</strong> (en <code>https://localhost:7229</code>). El orden de ejecuci&oacute;n importa:</p>
 
   <ol>
     <li class="summary-step"><strong>Levantar la API</strong>: F5 en <code>WebApi\WebApplication1</code> (perfil <code>https</code>). Queda en <code>https://localhost:7229/swagger</code>.</li>
     <li class="summary-step"><strong>Levantar el cliente</strong>: F5 en <code>ConsumoServicios\WebApplication1</code>. Abre <code>http://localhost:5217</code>.</li>
     <li class="summary-step"><strong>Navegar a <code>http://localhost:5217/Autor</code></strong>: el controller hace <code>GET https://localhost:7229/api/Autor</code> y la vista pinta la tabla con los autores de <code>DB_BIBLIOTECA</code>.</li>
+    <li class="summary-step"><strong>Navegar a <code>http://localhost:5217/Libro</code> (agregado hoy)</strong>: <code>LibroController.Index()</code> consume <code>GET https://localhost:7229/api/Libro</code> y muestra el CRUD: <strong>Create New</strong> inserta y <strong>Edit</strong> actualiza (ambos usando <code>ViewBag.autores</code> y <code>TempData["message"]</code>).</li>
   </ol>
 
   <div class="postman">
     <strong>Prueba integrada manual (equivalente en el navegador):</strong><br>
     Con la API y el cliente corriendo, abro <code>http://localhost:5217/Autor</code> y verifico que la tabla muestre:<br>
-    <code>1</code> &mdash; Garc&iacute;a M&aacute;rquez &nbsp;|&nbsp; <code>2</code> &mdash; Vargas Llosa.
+    <code>1</code> &mdash; Garc&iacute;a M&aacute;rquez &nbsp;|&nbsp; <code>2</code> &mdash; Vargas Llosa.<br>
+    Luego <code>http://localhost:5217/Libro</code>: lista de libros, y pruebo <strong>Create New</strong> y <strong>Edit</strong>; al final veo el mensaje de la API en <code>@TempData["message"]</code>.
   </div>
 
   <div class="danger-box"><strong>Error t&iacute;pico de conexi&oacute;n:</strong> si el cliente sale con error <em>"The SSL connection could not be established"</em> o <em>certificate validation</em>, es el certificado de desarrollo. Soluci&oacute;n: ejecutar una vez <code>dotnet dev-certs https --trust</code>. Tambi&eacute;n verifica que la API est&eacute; corriendo y que <code>apiBase</code> coincida con el puerto HTTPS real de la API (regla del puerto).</div>
@@ -1292,9 +1625,11 @@ app.<span class="fn">Run</span>();</pre>
     <li class="summary-step"><strong>Program.cs</strong> &rarr; agregar <code>AddHttpClient()</code></li>
     <li class="summary-step"><strong>Models</strong> (Autor, Libro, ApiResponse&lt;T&gt;) &rarr; copiados de la API</li>
     <li class="summary-step"><strong>Controllers/AutorController.cs</strong> &rarr; <code>apiBase = "https://localhost:7229"</code></li>
+    <li class="summary-step"><strong>Controllers/LibroController.cs (hoy)</strong> &rarr; CRUD de libros con <code>HttpClient</code> + <code>SelectList</code> y <code>TempData</code></li>
     <li class="summary-step"><strong>Views/Autor/Index.cshtml</strong> &rarr; tabla con <code>IEnumerable&lt;Autor&gt;</code></li>
+    <li class="summary-step"><strong>Views/Libro/Index, Create y Edit (hoy)</strong> &rarr; generadas con el scaffolding (package CodeGeneration.Design)</li>
     <li class="summary-step"><strong>launchSettings.json</strong> &rarr; <code>http://localhost:5217</code></li>
-    <li class="summary-step"><strong>Ejecutar la prueba integrada</strong>: API en 7229 + cliente en <code>http://localhost:5217/Autor</code></li>
+    <li class="summary-step"><strong>Ejecutar la prueba integrada</strong>: API en 7229 + cliente en <code>http://localhost:5217/Autor</code> y <code>/Libro</code></li>
   </ol>
 
   <div class="flow-arrow">&#8681;</div>
